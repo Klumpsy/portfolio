@@ -242,59 +242,6 @@ export default async function Home() {
           </div>
         </div>
       </section>
-
-      {/* Skills Section */}
-      <section className="relative py-20">
-        {/* Decorative elements */}
-        <div className="absolute -left-20 top-40 w-64 h-64 bg-blue-100/30 dark:bg-blue-800/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-20 right-10 w-80 h-80 bg-blue-200/30 dark:bg-blue-600/10 rounded-full blur-3xl"></div>
-
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="text-center mb-14">
-            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 mb-4">
-              <span className="text-blue-600 dark:text-blue-300 text-sm font-medium">
-                My Skills
-              </span>
-            </div>
-
-            <h2 className="text-3xl font-bold mb-4 text-slate-800 dark:text-white">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300">
-                Technical Expertise
-              </span>
-            </h2>
-
-            <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              A collection of technologies and tools I work with to create
-              modern web applications.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              "JavaScript",
-              "React",
-              "TypeScript",
-              "Next.js",
-              "Tailwind CSS",
-              "Node.js",
-              "Express",
-              "MongoDB",
-            ].map((skill) => (
-              <div
-                key={skill}
-                className="bg-white dark:bg-slate-800 rounded-xl p-6 text-center shadow-md border border-slate-100 dark:border-slate-700 transform hover:translate-y-[-4px] hover:shadow-lg transition-all duration-300 group"
-              >
-                <div className="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-400 dark:to-blue-500 rounded-lg flex items-center justify-center text-white text-xl font-bold group-hover:scale-110 transition-transform duration-300">
-                  {skill.charAt(0)}
-                </div>
-                <h3 className="text-base font-semibold text-slate-700 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors duration-300">
-                  {skill}
-                </h3>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
