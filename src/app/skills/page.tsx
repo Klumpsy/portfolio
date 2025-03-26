@@ -58,7 +58,9 @@ export default function SkillsPage() {
           <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
             Explore my technical skills and experience in this interactive 3D
             visualization. Drag to rotate, scroll to zoom, and click on any
-            technology to learn more.
+            technology to learn more. You will see proficiency bars below but we
+            all know that skills are not suitable to put into proficiency bars,
+            but hey they look cool!
           </p>
         </div>
 
