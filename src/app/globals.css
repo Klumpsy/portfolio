@@ -1,0 +1,67 @@
+@import 'tailwindcss';
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 215 25% 27%; /* slate-800 */
+  --card: 0 0% 100%;
+  --card-foreground: 215 25% 27%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 25% 27%;
+  --primary: 217 91% 60%; /* blue-600 */
+  --primary-foreground: 0 0% 98%;
+  --secondary: 214 32% 91%; /* slate-200 */
+  --secondary-foreground: 215 25% 27%;
+  --muted: 214 32% 91%;
+  --muted-foreground: 215 16% 47%;
+  --accent: 217 91% 60%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 217 91% 60%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 222 47% 11%; /* slate-900 */
+  --foreground: 210 40% 98%; /* slate-50 */
+  --card: 215 28% 17%; /* slate-800 */
+  --card-foreground: 210 40% 98%;
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 217 91% 60%; /* blue-600 */
+  --primary-foreground: 210 40% 98%;
+  --secondary: 217 33% 17%; /* blue-900 */
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 20% 65%;
+  --accent: 217 91% 60%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217 33% 17%;
+  --input: 217 33% 17%;
+  --ring: 224 76% 48%; /* blue-700 */
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+
+/* Background grid patterns */
+.bg-grid-slate-100 {
+  background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+    linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+}
+
+.bg-grid-slate-700\/25 {
+  background-image: linear-gradient(to right, rgba(51, 65, 85, 0.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(51, 65, 85, 0.25) 1px, transparent 1px);
+}
+
+
+

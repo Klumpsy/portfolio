@@ -1,0 +1,58 @@
+[
+  {
+    "title": "Hondenkunde 2.0",
+    "description": "A comprehensive dog training and information website with modern UI and responsive design. Built as an affiliate site to provide valuable resources for dog owners.",
+    "image": "/icons/dog.svg",
+    "tags": ["TypeScript", "Next.js", "CSS", "Responsive Design"],
+    "githubUrl": "https://github.com/Klumpsy/hondenkunde2.0"
+  },
+  {
+    "title": "Judo-AI-Analyzer",
+    "description": "An innovative application that uses AI to analyze judo techniques and provide feedback to practitioners, enhancing training experiences.",
+    "image": "/icons/judo.svg",
+    "tags": ["TypeScript", "AI", "Machine Learning", "Next.js"],
+    "githubUrl": "https://github.com/Klumpsy/judo-ai-analyzer"
+  },
+  {
+    "title": "SpaceExplorer",
+    "description": "An interactive space exploration application built with Vue.js that connects to NASA APIs to deliver fascinating content about our universe.",
+    "image": "/icons/space.svg",
+    "tags": ["Vue.js", "NASA API", "JavaScript", "CSS"],
+    "githubUrl": "https://github.com/Klumpsy/SpaceExplorer"
+  },
+  {
+    "title": "MathMate",
+    "description": "Educational tool for practicing basic mathematics with personalized dashboards that track progress. Created to help primary school students improve their math skills.",
+    "image": "/icons/math.svg",
+    "tags": ["JavaScript", "Educational", "Dashboard", "Interactive"],
+    "githubUrl": "https://github.com/Klumpsy/MathMate"
+  },
+  {
+    "title": "CryptoPetz",
+    "description": "A blockchain-based virtual pet project with 3D visualization using React Three Fiber. Features interactive pet care mechanics and blockchain integration.",
+    "image": "/icons/crypto.svg",
+    "tags": ["JavaScript", "React", "Three.js", "Blockchain"],
+    "githubUrl": "https://github.com/Klumpsy/CryptoPetz3D"
+  },
+  {
+    "title": "KlumpsyCrypto",
+    "description": "A modern cryptocurrency information website built with React and Redux Toolkit, featuring real-time price tracking and detailed coin information.",
+    "image": "/file.svg",
+    "tags": ["React", "Redux Toolkit", "SCSS", "API Integration"],
+    "githubUrl": "https://github.com/Klumpsy/KlumpsyCrypto"
+  },
+  {
+    "title": "SwordHunterGame",
+    "description": "An RPG game developed to practice Object-Oriented Programming in JavaScript. Features character classes, combat mechanics, and pixel art visuals.",
+    "image": "/window.svg",
+    "tags": ["JavaScript", "OOP", "Game Development", "Canvas"],
+    "githubUrl": "https://github.com/Klumpsy/SwordHunterGame"
+  },
+  {
+    "title": "Rapport-tool-Alpha",
+    "description": "A professional tool designed for schools to create and manage student reports, streamlining the assessment process for teachers.",
+    "image": "/globe.svg",
+    "tags": ["JavaScript", "Education", "UI/UX", "Dashboard"],
+    "githubUrl": "https://github.com/Klumpsy/Rapport-tool-Alpha"
+  }
+] 
