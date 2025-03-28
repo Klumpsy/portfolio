@@ -411,7 +411,7 @@ export default function RobotAvatar() {
         try {
           containerRef.current.removeChild(rendererRef.current.domElement);
         } catch (e) {
-          console.log("Element already removed");
+          console.log("Element already removed", e);
         }
       }
       if (actionTimeoutRef.current) {
