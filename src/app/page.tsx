@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import FeaturedProjectCard from "@/components/home/FeaturedProjectCard";
+import RobotAvatar from "@/components/common/RobotAvatar";
 
 interface FeaturedProject {
   id: number;
@@ -39,6 +40,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden">
+      <RobotAvatar />
       <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-blue-100/40 to-transparent dark:from-blue-900/20 dark:to-transparent"></div>
 
       <div className="absolute -top-20 -left-20 w-96 h-96 bg-blue-200/30 dark:bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -161,9 +163,8 @@ export default async function Home() {
                   />
                 </div>
 
-                {/* Decorative elements */}
                 <div className="absolute -right-4 -bottom-4 bg-blue-500 dark:bg-blue-400 rounded-full w-16 h-16 z-20 shadow-lg flex items-center justify-center text-white text-lg font-bold">
-                  JS
+                  TS
                 </div>
 
                 <div className="absolute -top-6 -left-6 p-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg z-20 border border-slate-200 dark:border-slate-700">
@@ -172,7 +173,6 @@ export default async function Home() {
                   </span>
                 </div>
 
-                {/* Dots pattern */}
                 <div className="absolute -right-12 -top-12 w-24 h-24 grid grid-cols-3 gap-2">
                   {[...Array(9)].map((_, i) => (
                     <div
@@ -187,11 +187,9 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Featured Projects Section */}
       <section className="relative py-20">
         <div className="absolute inset-0 bg-slate-100/70 dark:bg-slate-800/20"></div>
 
-        {/* Decorative elements */}
         <div className="absolute top-0 w-full h-24 bg-gradient-to-b from-slate-50 to-transparent dark:from-slate-900 dark:to-transparent"></div>
         <div className="absolute -right-20 top-40 w-64 h-64 bg-blue-200/30 dark:bg-blue-700/10 rounded-full blur-3xl"></div>
 
