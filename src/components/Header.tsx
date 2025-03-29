@@ -30,116 +30,131 @@ export default function Header() {
     setMobileMenuOpen(false);
   }, [pathname]);
 
+  // Prevent scrolling when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
+
   if (!mounted) {
     return null;
   }
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? "bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-md"
-          : "bg-transparent"
-      }`}
-    >
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex justify-between items-center h-20">
-          {/* Logo */}
-          <div className="relative z-10">
-            <Link
-              href="/"
-              className="flex items-center space-x-3 group"
-              aria-label="Bart Klumpers - Home"
-            >
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 dark:from-blue-500 dark:to-blue-300 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/20 dark:shadow-blue-500/10 group-hover:shadow-blue-500/30 transition-all duration-300 group-hover:translate-y-[-2px]">
-                B
-              </div>
-              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 group-hover:from-blue-600 group-hover:to-blue-400 dark:group-hover:from-blue-400 dark:group-hover:to-blue-300 transition-all duration-300">
-                Bart<span className="hidden sm:inline"> Klumpers</span>
-              </span>
-            </Link>
-          </div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
-            {[
-              { name: "Home", path: "/" },
-              { name: "Projects", path: "/projects" },
-              { name: "Skills", path: "/skills" },
-              { name: "About", path: "/about" },
-            ].map((item) => (
+    <>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-md"
+            : "bg-transparent"
+        }`}
+      >
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex justify-between items-center h-20">
+            {/* Logo */}
+            <div className="relative z-10">
               <Link
-                key={item.name}
-                href={item.path}
-                className={`relative py-2 px-4 font-medium rounded-lg transition-all duration-300 ${
-                  pathname === item.path
-                    ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30"
-                    : "text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
-                }`}
+                href="/"
+                className="flex items-center space-x-3 group"
+                aria-label="Bart Klumpers - Home"
               >
-                {item.name}
-                {pathname === item.path && (
-                  <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 dark:bg-blue-400 rounded-full"></span>
-                )}
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 dark:from-blue-500 dark:to-blue-300 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/20 dark:shadow-blue-500/10 group-hover:shadow-blue-500/30 transition-all duration-300 group-hover:translate-y-[-2px]">
+                  B
+                </div>
+                <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 group-hover:from-blue-600 group-hover:to-blue-400 dark:group-hover:from-blue-400 dark:group-hover:to-blue-300 transition-all duration-300">
+                  Bart<span className="hidden sm:inline"> Klumpers</span>
+                </span>
               </Link>
-            ))}
+            </div>
 
-            <div className="w-px h-6 mx-2 bg-slate-200 dark:bg-slate-700"></div>
-
-            <Link
-              href="mailto:info@bartklumpers.com"
-              className="ml-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium shadow-md hover:shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-300 hover:translate-y-[-2px]"
-            >
-              Contact Me
-            </Link>
-          </nav>
-
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center space-x-2">
-            {/* Menu Toggle */}
-            <button
-              type="button"
-              className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-            >
-              {mobileMenuOpen ? (
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center space-x-1">
+              {[
+                { name: "Home", path: "/" },
+                { name: "Projects", path: "/projects" },
+                { name: "Skills", path: "/skills" },
+                { name: "About", path: "/about" },
+              ].map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.path}
+                  className={`relative py-2 px-4 font-medium rounded-lg transition-all duration-300 ${
+                    pathname === item.path
+                      ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30"
+                      : "text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
+                  }`}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              )}
-            </button>
+                  {item.name}
+                  {pathname === item.path && (
+                    <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 dark:bg-blue-400 rounded-full"></span>
+                  )}
+                </Link>
+              ))}
+
+              <div className="w-px h-6 mx-2 bg-slate-200 dark:bg-slate-700"></div>
+
+              <Link
+                href="mailto:info@bartklumpers.com"
+                className="ml-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium shadow-md hover:shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-300 hover:translate-y-[-2px]"
+              >
+                Contact Me
+              </Link>
+            </nav>
+
+            {/* Mobile Menu Button */}
+            <div className="md:hidden flex items-center space-x-2">
+              {/* Menu Toggle */}
+              <button
+                type="button"
+                className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              >
+                {mobileMenuOpen ? (
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Overlay - Now outside the header component */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md flex flex-col md:hidden">
+        <div className="fixed inset-0 z-50 bg-white dark:bg-slate-900 flex flex-col md:hidden">
           <div className="flex justify-end p-4">
             <button
               type="button"
@@ -235,6 +250,6 @@ export default function Header() {
           </div>
         </div>
       )}
-    </header>
+    </>
   );
 }
