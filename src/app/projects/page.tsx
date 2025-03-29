@@ -1,36 +1,5 @@
 import ProjectCard from "@/components/projects/ProjectCard";
-
-interface Project {
-  id: number;
-  name: string;
-  description: string | null;
-  html_url: string;
-  topics: string[];
-  stargazers_count: number;
-  language: string | null;
-  updated_at: string;
-  homepage: string | null;
-}
-
-async function getProjects(): Promise<Project[]> {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/github-projects`,
-      {
-        next: { revalidate: 3600 },
-      }
-    );
-
-    if (!res.ok) {
-      throw new Error("Failed to fetch projects");
-    }
-
-    return res.json();
-  } catch (error) {
-    console.error("Error fetching projects:", error);
-    return [];
-  }
-}
+import { getProjects } from "./controller";
 
 export default async function ProjectsPage() {
   const projects = await getProjects();

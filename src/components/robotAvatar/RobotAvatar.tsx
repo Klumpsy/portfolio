@@ -127,12 +127,14 @@ export default function RobotAvatar() {
   useEffect(() => {
     if (!containerRef.current || !visible) return;
 
+    const container = containerRef.current;
+
     if (
       rendererRef.current &&
       rendererRef.current.domElement &&
-      containerRef.current.contains(rendererRef.current.domElement)
+      container.contains(rendererRef.current.domElement)
     ) {
-      containerRef.current.removeChild(rendererRef.current.domElement);
+      container.removeChild(rendererRef.current.domElement);
     }
 
     const renderer = new THREE.WebGLRenderer({
@@ -290,7 +292,7 @@ export default function RobotAvatar() {
     robot.add(sunglassesGroup);
     scene.add(robot);
 
-    containerRef.current.appendChild(renderer.domElement);
+    container.appendChild(renderer.domElement);
 
     const animate = () => {
       frameIdRef.current = requestAnimationFrame(animate);
@@ -407,11 +409,10 @@ export default function RobotAvatar() {
     animate();
 
     const handleResize = () => {
-      if (!containerRef.current || !rendererRef.current || !cameraRef.current)
-        return;
+      if (!container || !rendererRef.current || !cameraRef.current) return;
 
-      const width = containerRef.current.clientWidth;
-      const height = containerRef.current.clientHeight;
+      const width = container.clientWidth;
+      const height = container.clientHeight;
 
       rendererRef.current.setSize(width, height);
       cameraRef.current.aspect = width / height;
@@ -420,8 +421,10 @@ export default function RobotAvatar() {
 
     window.addEventListener("resize", handleResize);
 
+    // Initial resize call
     handleResize();
 
+    // Reset action after timeout
     if (actionTimeoutRef.current) {
       clearTimeout(actionTimeoutRef.current);
     }
@@ -429,21 +432,18 @@ export default function RobotAvatar() {
     if (robotAction !== "idle") {
       actionTimeoutRef.current = setTimeout(() => {
         setRobotAction("idle");
-      }, 4000);
+      }, 4000); // Actions run for 4 seconds
     }
 
+    // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
       if (frameIdRef.current) {
         cancelAnimationFrame(frameIdRef.current);
       }
-      if (
-        containerRef.current &&
-        rendererRef.current &&
-        rendererRef.current.domElement
-      ) {
+      if (container && rendererRef.current && rendererRef.current.domElement) {
         try {
-          containerRef.current.removeChild(rendererRef.current.domElement);
+          container.removeChild(rendererRef.current.domElement);
         } catch (e) {
           console.log("Element already removed", e);
         }
@@ -466,7 +466,6 @@ export default function RobotAvatar() {
     visible,
   ]);
 
-  // Function to trigger an action with custom message
   const triggerAction = (action: string, message: string): void => {
     setRobotAction(action);
     setWelcomeMessage(message);

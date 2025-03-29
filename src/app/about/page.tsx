@@ -2,47 +2,8 @@ import Image from "next/image";
 import GitHubStats from "@/components/about/GitHubStats";
 import GitHubActivityGraph from "@/components/about/GitHubActivityGraph";
 import Link from "next/link";
-
-interface GitHubProfile {
-  login: string;
-  avatar_url: string;
-  name: string | null;
-  bio: string | null;
-  followers: number;
-  following: number;
-  totalStars: number;
-  topLanguages: { name: string; percentage: number }[];
-  publicRepos: number;
-  contributions: number;
-  company: string | null;
-  location: string | null;
-  twitter_username: string | null;
-  blog: string | null;
-}
-
-async function getGitHubProfile(): Promise<GitHubProfile | null> {
-  try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      process.env.VERCEL_URL ||
-      "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/github-profile`, {
-      next: { revalidate: 3600 }, // Revalidate every hour
-    });
-
-    if (!res.ok) {
-      console.error(`Failed to fetch GitHub profile: ${res.status}`);
-      return null;
-    }
-
-    const data = await res.json();
-    return data.profile;
-  } catch (error) {
-    console.error("Error fetching GitHub profile:", error);
-    return null;
-  }
-}
-
+import { GitHubProfile } from "./types";
+import { getGitHubProfile } from "./controller";
 export default async function AboutPage() {
   const profile = await getGitHubProfile();
 

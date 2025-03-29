@@ -1,38 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import FeaturedProjectCard from "@/components/home/FeaturedProjectCard";
-
-interface FeaturedProject {
-  id: number;
-  name: string;
-  description: string | null;
-  html_url: string;
-  topics: string[];
-  stargazers_count: number;
-  language: string | null;
-  updated_at: string;
-  homepage: string | null;
-}
-
-async function getFeaturedProjects(): Promise<FeaturedProject[]> {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/github-featured`,
-      {
-        next: { revalidate: 3600 },
-      }
-    );
-
-    if (!res.ok) {
-      throw new Error("Failed to fetch featured projects");
-    }
-
-    return res.json();
-  } catch (error) {
-    console.error("Error fetching featured projects:", error);
-    return [];
-  }
-}
+import { getFeaturedProjects } from "./controller";
 
 export default async function Home() {
   const featuredProjects = await getFeaturedProjects();
