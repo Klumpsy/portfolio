@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Header from "@/components/Header";
 import "./globals.css";
+import RobotAvatar from "@/components/robotAvatar/RobotAvatar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,6 +32,7 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Header />
+          <RobotAvatar />
           <main className="pt-16">{children}</main>
         </ThemeProvider>
       </body>

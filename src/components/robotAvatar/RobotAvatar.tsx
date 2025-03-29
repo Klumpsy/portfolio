@@ -2,9 +2,18 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import {
+  ROBOT_ACTIONS,
+  ROBOT_COLORS,
+  ROBOT_ACCESSORIES,
+  ROBOT_FAQ,
+  ROBOT_INTERACTIONS,
+  getRandomWelcomeMessage,
+  getTimeBasedGreeting,
+} from "./robotCommands";
+import { RobotInteraction } from "./robotCommands";
 
 export default function RobotAvatar() {
-  // Refs for THREE.js objects
   const containerRef = useRef<HTMLDivElement | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -13,42 +22,119 @@ export default function RobotAvatar() {
   const frameIdRef = useRef<number>(0);
   const actionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // State variables
   const [showWelcome, setShowWelcome] = useState<boolean>(true);
   const [visible, setVisible] = useState<boolean>(true);
   const [showMenu, setShowMenu] = useState<boolean>(false);
-  const [robotColor, setRobotColor] = useState<number>(0x3b82f6); // Initial blue color
-  const [robotMood, setRobotMood] = useState<string>("happy"); // Initial mood
-  const [robotAction, setRobotAction] = useState<string>("idle"); // State for actions
-  const [isRainbow, setIsRainbow] = useState<boolean>(false); // For rainbow mode
+  const [showFAQ, setShowFAQ] = useState<boolean>(false);
+  const [robotColor, setRobotColor] = useState<number>(0x3b82f6);
+  const [robotAction, setRobotAction] = useState<string>("idle");
+  const [isRainbow, setIsRainbow] = useState<boolean>(false);
   const [welcomeMessage, setWelcomeMessage] = useState<string>(
-    "Hello! Welcome to my portfolio! 👋"
+    getRandomWelcomeMessage()
   );
   const [wearingMustache, setWearingMustache] = useState<boolean>(false);
   const [wearingSunglasses, setWearingSunglasses] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
 
-  // Key for remounting component when navigating
   const [mountKey, setMountKey] = useState<number>(Date.now());
 
-  // Effect to reset the component when navigating back
   useEffect(() => {
-    // This will force remount when navigating back to this page
-    const handleRouteChange = () => {
-      setMountKey(Date.now());
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
     };
 
-    // Listen for visibility change to handle tab switching
-    document.addEventListener("visibilitychange", handleRouteChange);
+    checkIfMobile();
+    window.addEventListener("resize", checkIfMobile);
 
     return () => {
-      document.removeEventListener("visibilitychange", handleRouteChange);
+      window.removeEventListener("resize", checkIfMobile);
     };
   }, []);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        setMountKey(Date.now());
+        setWelcomeMessage("Welcome back! Glad you returned to the portfolio!");
+        setShowWelcome(true);
+      }
+    };
 
-    // Initialize renderer
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (visible) {
+      setMountKey(Date.now());
+    }
+  }, [visible]);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setWelcomeMessage(getTimeBasedGreeting());
+      setShowWelcome(true);
+    }, 10000);
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+
+    const setupInteractions = () => {
+      ROBOT_INTERACTIONS.forEach((interaction: RobotInteraction) => {
+        const elements = document.querySelectorAll(interaction.selector);
+
+        elements.forEach((element) => {
+          element.addEventListener("mouseenter", () => {
+            setWelcomeMessage(interaction.message);
+            setShowWelcome(true);
+
+            if (interaction.action) {
+              setRobotAction(interaction.action);
+
+              if (actionTimeoutRef.current) {
+                clearTimeout(actionTimeoutRef.current);
+              }
+
+              actionTimeoutRef.current = setTimeout(() => {
+                setRobotAction("idle");
+              }, 4000);
+            }
+          });
+        });
+      });
+    };
+
+    const timeoutId = setTimeout(setupInteractions, 1000);
+
+    return () => {
+      clearTimeout(timeoutId);
+
+      ROBOT_INTERACTIONS.forEach((interaction: RobotInteraction) => {
+        const elements = document.querySelectorAll(interaction.selector);
+        elements.forEach((element) => {
+          element.removeEventListener("mouseenter", () => {});
+        });
+      });
+    };
+  }, [visible]);
+
+  useEffect(() => {
+    if (!containerRef.current || !visible) return;
+
+    if (
+      rendererRef.current &&
+      rendererRef.current.domElement &&
+      containerRef.current.contains(rendererRef.current.domElement)
+    ) {
+      containerRef.current.removeChild(rendererRef.current.domElement);
+    }
+
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
@@ -57,17 +143,14 @@ export default function RobotAvatar() {
     renderer.setSize(120, 120); // Smaller size
     rendererRef.current = renderer;
 
-    // Create scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf8fafc); // Light background
+    scene.background = new THREE.Color(0xf8fafc);
     sceneRef.current = scene;
 
-    // Create camera
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
     camera.position.z = 3;
     cameraRef.current = camera;
 
-    // Add lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
 
@@ -75,21 +158,18 @@ export default function RobotAvatar() {
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
 
-    // Create robot
     const robot = new THREE.Group();
     robotRef.current = robot;
 
-    // Head
     const headGeometry = new THREE.BoxGeometry(1.8, 1.8, 1.8, 4, 4, 4);
     const headMaterial = new THREE.MeshPhongMaterial({
-      color: robotColor, // Using state for color
+      color: robotColor,
       shininess: 100,
       specular: 0xffffff,
     });
     const head = new THREE.Mesh(headGeometry, headMaterial);
     robot.add(head);
 
-    // Eyes
     const eyeGeometry = new THREE.SphereGeometry(0.2, 16, 16);
     const eyeMaterial = new THREE.MeshPhongMaterial({
       color: 0xffffff,
@@ -105,28 +185,25 @@ export default function RobotAvatar() {
     rightEye.position.set(0.5, 0.4, 0.9);
     robot.add(rightEye);
 
-    // Antenna
     const antennaGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.5, 8);
     const antennaMaterial = new THREE.MeshPhongMaterial({
-      color: 0x3b82f6,
+      color: robotColor,
       shininess: 100,
     });
     const antenna = new THREE.Mesh(antennaGeometry, antennaMaterial);
     antenna.position.set(0, 1.2, 0);
     robot.add(antenna);
 
-    // Antenna tip
     const ballGeometry = new THREE.SphereGeometry(0.1, 16, 16);
     const ballMaterial = new THREE.MeshPhongMaterial({
-      color: 0x3b82f6,
-      emissive: 0x3b82f6,
+      color: robotColor,
+      emissive: robotColor,
       emissiveIntensity: 0.8,
     });
     const ball = new THREE.Mesh(ballGeometry, ballMaterial);
     ball.position.set(0, 1.5, 0);
     robot.add(ball);
 
-    // Mouth
     const mouthGeometry = new THREE.BoxGeometry(0.8, 0.2, 0.1);
     const mouthMaterial = new THREE.MeshPhongMaterial({
       color: 0xffffff,
@@ -137,10 +214,8 @@ export default function RobotAvatar() {
     mouth.position.set(0, -0.4, 0.9);
     robot.add(mouth);
 
-    // Mustache (initially invisible)
     const mustacheGroup = new THREE.Group();
 
-    // Left part
     const leftMustacheGeometry = new THREE.BoxGeometry(0.5, 0.12, 0.05);
     const mustacheMaterial = new THREE.MeshPhongMaterial({
       color: 0x222222,
@@ -154,7 +229,6 @@ export default function RobotAvatar() {
     leftMustachePart.rotation.z = Math.PI / 12; // Slight angle
     mustacheGroup.add(leftMustachePart);
 
-    // Right part
     const rightMustacheGeometry = new THREE.BoxGeometry(0.5, 0.12, 0.05);
     const rightMustachePart = new THREE.Mesh(
       rightMustacheGeometry,
@@ -164,7 +238,6 @@ export default function RobotAvatar() {
     rightMustachePart.rotation.z = -Math.PI / 12; // Slight angle in opposite direction
     mustacheGroup.add(rightMustachePart);
 
-    // Center part
     const centerMustacheGeometry = new THREE.BoxGeometry(0.2, 0.08, 0.05);
     const centerMustachePart = new THREE.Mesh(
       centerMustacheGeometry,
@@ -176,10 +249,8 @@ export default function RobotAvatar() {
     mustacheGroup.visible = wearingMustache;
     robot.add(mustacheGroup);
 
-    // Sunglasses (initially invisible)
     const sunglassesGroup = new THREE.Group();
 
-    // Frame
     const frameGeometry = new THREE.BoxGeometry(1.5, 0.1, 0.05);
     const frameMaterial = new THREE.MeshPhongMaterial({
       color: 0x222222,
@@ -189,7 +260,6 @@ export default function RobotAvatar() {
     frame.position.set(0, 0.4, 0.95);
     sunglassesGroup.add(frame);
 
-    // Middle bridge
     const bridgeGeometry = new THREE.BoxGeometry(0.15, 0.08, 0.12);
     const bridgeMaterial = new THREE.MeshPhongMaterial({
       color: 0x222222,
@@ -199,7 +269,6 @@ export default function RobotAvatar() {
     bridge.position.set(0, 0.4, 1);
     sunglassesGroup.add(bridge);
 
-    // Left lens
     const lensGeometry = new THREE.CircleGeometry(0.35, 32);
     const lensMaterial = new THREE.MeshPhongMaterial({
       color: 0x000000,
@@ -212,7 +281,6 @@ export default function RobotAvatar() {
     leftLens.rotation.x = Math.PI / 2;
     sunglassesGroup.add(leftLens);
 
-    // Right lens
     const rightLens = new THREE.Mesh(lensGeometry, lensMaterial);
     rightLens.position.set(0.55, 0.4, 0.96);
     rightLens.rotation.x = Math.PI / 2;
@@ -220,13 +288,10 @@ export default function RobotAvatar() {
 
     sunglassesGroup.visible = wearingSunglasses;
     robot.add(sunglassesGroup);
-
     scene.add(robot);
 
-    // Add to DOM
     containerRef.current.appendChild(renderer.domElement);
 
-    // Animation
     const animate = () => {
       frameIdRef.current = requestAnimationFrame(animate);
 
@@ -238,7 +303,6 @@ export default function RobotAvatar() {
       ) {
         const robot = robotRef.current;
 
-        // Rainbow mode color cycling
         if (isRainbow) {
           const hue = (Date.now() * 0.001) % 1;
           const color = new THREE.Color().setHSL(hue, 0.8, 0.6);
@@ -253,7 +317,6 @@ export default function RobotAvatar() {
             antenna.material.color.set(color);
           }
         } else {
-          // Normal color
           const normalColor = new THREE.Color(robotColor);
           if (head.material instanceof THREE.MeshPhongMaterial) {
             head.material.color.set(normalColor);
@@ -267,26 +330,15 @@ export default function RobotAvatar() {
           }
         }
 
-        // Update accessory visibility
         mustacheGroup.visible = wearingMustache;
         sunglassesGroup.visible = wearingSunglasses;
 
-        // Basic animation based on mood
-        let floatSpeed = 0.001;
-        let floatAmount = 0.1;
-        let rotationSpeed = 0.0005;
-        let rotationAmount = 0.2;
+        // Basic animation parameters
+        const floatSpeed = 0.001;
+        const floatAmount = 0.1;
+        const rotationSpeed = 0.0005;
+        const rotationAmount = 0.2;
 
-        // Apply mood modifications
-        if (robotMood === "excited") {
-          floatSpeed = 0.002;
-          rotationSpeed = 0.001;
-          rotationAmount = 0.3;
-        } else if (robotMood === "sad") {
-          floatAmount = 0.05;
-        }
-
-        // Special actions
         if (robotAction === "idle") {
           // Default floating animation
           robot.position.y = Math.sin(Date.now() * floatSpeed) * floatAmount;
@@ -317,13 +369,11 @@ export default function RobotAvatar() {
             robot.scale.setScalar(1);
           }
         } else if (robotAction === "dizzy") {
-          // Dizzy animation
           const dizzyTime = Date.now() * 0.002;
           robot.rotation.z = Math.sin(dizzyTime * 5) * 0.3;
           robot.rotation.x = Math.sin(dizzyTime * 4) * 0.2;
           robot.rotation.y += 0.03;
 
-          // Make eyes swirl
           const eyeScale = 0.8 + Math.sin(dizzyTime * 8) * 0.2;
           leftEye.scale.set(eyeScale, eyeScale, 1);
           rightEye.scale.set(eyeScale, eyeScale, 1);
@@ -333,8 +383,7 @@ export default function RobotAvatar() {
         // Random blinking
         const eyes = [leftEye, rightEye];
         eyes.forEach((eye) => {
-          // More frequent blinking when excited
-          const blinkChance = robotMood === "excited" ? 0.01 : 0.005;
+          const blinkChance = 0.005;
           if (Math.random() < blinkChance && robotAction !== "dizzy") {
             eye.scale.y = 0.1;
             setTimeout(() => {
@@ -343,32 +392,20 @@ export default function RobotAvatar() {
           }
         });
 
-        // Mouth adjustments based on mood
-        if (robotMood === "sad") {
-          mouth.position.y = -0.5; // Lower position for sad
-          mouth.rotation.z = Math.PI; // Flip for frown
-        } else {
-          mouth.position.y = -0.4; // Normal position
-          mouth.rotation.z = 0; // Normal rotation for smile
-        }
-
-        // Random mouth movement when speaking
         if (showWelcome && Math.random() < 0.1) {
-          const mouthMovement = robotMood === "excited" ? 2 : 1.5;
+          const mouthMovement = 1.5;
           mouth.scale.y = 0.5 + Math.random() * mouthMovement;
           setTimeout(() => {
             mouth.scale.y = 1;
           }, 100);
         }
 
-        // Render the scene
         rendererRef.current.render(sceneRef.current, cameraRef.current);
       }
     };
 
     animate();
 
-    // Handle window resize
     const handleResize = () => {
       if (!containerRef.current || !rendererRef.current || !cameraRef.current)
         return;
@@ -383,10 +420,8 @@ export default function RobotAvatar() {
 
     window.addEventListener("resize", handleResize);
 
-    // Initial resize call
     handleResize();
 
-    // Reset action after timeout
     if (actionTimeoutRef.current) {
       clearTimeout(actionTimeoutRef.current);
     }
@@ -394,10 +429,9 @@ export default function RobotAvatar() {
     if (robotAction !== "idle") {
       actionTimeoutRef.current = setTimeout(() => {
         setRobotAction("idle");
-      }, 4000); // Actions run for 4 seconds
+      }, 4000);
     }
 
-    // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
       if (frameIdRef.current) {
@@ -422,14 +456,14 @@ export default function RobotAvatar() {
       }
     };
   }, [
-    mountKey, // Add this to force remount
+    mountKey,
     showWelcome,
     robotColor,
-    robotMood,
     robotAction,
     isRainbow,
     wearingMustache,
     wearingSunglasses,
+    visible,
   ]);
 
   // Function to trigger an action with custom message
@@ -438,17 +472,15 @@ export default function RobotAvatar() {
     setWelcomeMessage(message);
     setShowWelcome(true);
 
-    // Reset action after timeout
     if (actionTimeoutRef.current) {
       clearTimeout(actionTimeoutRef.current);
     }
 
     actionTimeoutRef.current = setTimeout(() => {
       setRobotAction("idle");
-    }, 4000); // Actions run for 4 seconds
+    }, 4000);
   };
 
-  // Toggle rainbow mode
   const toggleRainbow = (): void => {
     const newRainbowState = !isRainbow;
     setIsRainbow(newRainbowState);
@@ -461,52 +493,105 @@ export default function RobotAvatar() {
     setShowWelcome(true);
   };
 
-  // Toggle accessories
-  const toggleMustache = (): void => {
-    const newState = !wearingMustache;
-    setWearingMustache(newState);
+  const toggleAccessory = (
+    accessoryId: string,
+    currentState: boolean,
+    setStateFn: React.Dispatch<React.SetStateAction<boolean>>
+  ): void => {
+    const accessory = ROBOT_ACCESSORIES.find((a) => a.id === accessoryId);
+    if (!accessory) return;
+
+    const newState = !currentState;
+    setStateFn(newState);
     setWelcomeMessage(
-      newState
-        ? "How do you like my mustache? Very distinguished, no?"
-        : "Removing my fancy mustache!"
+      newState ? accessory.equippedMessage : accessory.unequippedMessage
     );
     setShowWelcome(true);
   };
 
-  const toggleSunglasses = (): void => {
-    const newState = !wearingSunglasses;
-    setWearingSunglasses(newState);
-    setWelcomeMessage(
-      newState
-        ? "These sunglasses make me look like a movie star, right?"
-        : "Taking off my cool shades!"
-    );
+  const showFAQAnswer = (faqId: string): void => {
+    const faq = ROBOT_FAQ.find((f) => f.id === faqId);
+    if (!faq) return;
+
+    setWelcomeMessage(faq.answer);
     setShowWelcome(true);
+    setShowFAQ(false);
   };
 
-  // Function to handle closing the robot
-  const handleCloseRobot = (): void => {
-    setVisible(false);
+  const handleToggleRobot = (): void => {
+    setVisible(!visible);
+
+    if (!visible) {
+      setWelcomeMessage(
+        "I'm back and ready to help! What would you like to know?"
+      );
+      setShowWelcome(true);
+    }
   };
 
-  if (!visible) return null;
+  if (!visible) {
+    return (
+      <div
+        className={`${
+          isMobile
+            ? "fixed bottom-4 left-4 z-50" // Mobile: bottom left corner
+            : "fixed top-28 left-4 z-50" // Desktop/tablet: fixed at top left
+        }`}
+      >
+        <button
+          onClick={handleToggleRobot}
+          className="w-10 h-10 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-800 transition-all duration-200 text-white"
+          aria-label="Show robot assistant"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="3" y="11" width="18" height="10" rx="2" />
+            <circle cx="12" cy="5" r="2" />
+            <path d="M12 7v4" />
+            <line x1="8" y1="16" x2="8" y2="16" />
+            <line x1="16" y1="16" x2="16" y2="16" />
+          </svg>
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="absolute top-28 left-4 z-50" key={mountKey.toString()}>
+    <div
+      className={`${
+        isMobile ? "fixed bottom-4 left-4 z-50" : "fixed top-28 left-4 z-50"
+      }`}
+      key={mountKey.toString()}
+    >
       <div className="relative">
-        {/* Robot container */}
         <div
           className="w-16 h-16 bg-white dark:bg-slate-800 rounded-full shadow-lg border-2 border-blue-500 overflow-hidden cursor-pointer"
           onClick={() => setShowWelcome(!showWelcome)}
+          onTouchStart={(e) => e.preventDefault()}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            setShowWelcome(!showWelcome);
+          }}
           ref={containerRef}
         />
 
-        {/* Menu toggle button - outside the robot container */}
         <button
-          className="absolute -bottom-6 -right-1 w-6 h-6 bg-slate-700 rounded-full flex items-center justify-center text-white shadow-md z-10 hover:bg-slate-600 transition-all duration-200 transform"
+          className={`absolute ${
+            isMobile ? "top-0 -right-5" : "-bottom-6 -right-1"
+          } w-6 h-6 bg-slate-700 rounded-full flex items-center justify-center text-white shadow-md z-10 hover:bg-slate-600 transition-all duration-200 transform`}
           onClick={(e) => {
             e.stopPropagation();
             setShowMenu(!showMenu);
+            setShowFAQ(false);
           }}
           aria-label="Toggle robot controls"
         >
@@ -527,213 +612,159 @@ export default function RobotAvatar() {
           </svg>
         </button>
 
-        {/* Welcome message */}
         {showWelcome && (
-          <div className="absolute left-20 top-0 bg-white dark:bg-slate-700 rounded-lg shadow-lg p-3 w-56 border border-slate-200 dark:border-slate-600">
-            <p className="text-sm text-slate-800 dark:text-slate-200">
+          <div
+            className={`absolute ${
+              isMobile
+                ? "-top-4 -translate-y-full left-0 w-56 max-w-[calc(100vw-72px)]"
+                : "left-20 top-0 w-64"
+            } bg-white dark:bg-slate-700 rounded-lg shadow-lg p-3 border border-slate-200 dark:border-slate-600 z-20`}
+          >
+            <p className="text-sm text-slate-800 dark:text-slate-200 break-words">
               {welcomeMessage}
             </p>
-            <div className="absolute -left-2 top-4 w-0 h-0 border-t-8 border-b-8 border-r-8 border-t-transparent border-b-transparent border-r-white dark:border-r-slate-700"></div>
+            <div
+              className={`absolute ${
+                isMobile
+                  ? "bottom-0 left-8 translate-y-full border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-white dark:border-t-slate-700"
+                  : "-left-2 top-4 border-t-8 border-b-8 border-r-8 border-t-transparent border-b-transparent border-r-white dark:border-r-slate-700"
+              }`}
+            ></div>
           </div>
         )}
 
-        {/* Dropdown menu for all controls - positioned below robot */}
         {showMenu && (
-          <div className="absolute top-full left-0 mt-8 bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 p-3 w-64 z-50">
-            {/* Section title */}
-            <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
-              Mood
-            </div>
+          <div
+            className={`absolute ${
+              isMobile ? "bottom-50 left-0 mb-0" : "top-full left-0 mt-8"
+            } bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 p-3 w-64 max-w-[calc(100vw-80px)] z-50`}
+          >
+            <button
+              onClick={() => {
+                setShowFAQ(!showFAQ);
+              }}
+              className="w-full p-2 mb-4 text-sm bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 transition-all duration-200"
+              aria-label="Toggle FAQ"
+            >
+              {showFAQ ? "Hide FAQ" : "Ask me about Bart"}
+            </button>
 
-            {/* Mood buttons */}
-            <div className="flex gap-2 mb-4">
-              <button
-                onClick={() => {
-                  setRobotMood("happy");
-                  setWelcomeMessage("Hello! Welcome to my portfolio! 👋");
-                  setShowWelcome(true);
-                }}
-                className={`p-1 text-sm rounded-md flex-1 transition-all duration-200 ${
-                  robotMood === "happy"
-                    ? "bg-blue-500 text-white"
-                    : "bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200"
-                }`}
-                aria-label="Set robot mood to happy"
-              >
-                😊 Happy
-              </button>
-              <button
-                onClick={() => {
-                  setRobotMood("excited");
-                  setWelcomeMessage(
-                    "WOW! SO EXCITED you're here at my portfolio! 🎉"
-                  );
-                  setShowWelcome(true);
-                }}
-                className={`p-1 text-sm rounded-md flex-1 transition-all duration-200 ${
-                  robotMood === "excited"
-                    ? "bg-yellow-500 text-white"
-                    : "bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200"
-                }`}
-                aria-label="Set robot mood to excited"
-              >
-                🎉 Excited
-              </button>
-              <button
-                onClick={() => {
-                  setRobotMood("sad");
-                  setWelcomeMessage(
-                    "Oh... hi there. This is my portfolio... 😔"
-                  );
-                  setShowWelcome(true);
-                }}
-                className={`p-1 text-sm rounded-md flex-1 transition-all duration-200 ${
-                  robotMood === "sad"
-                    ? "bg-gray-500 text-white"
-                    : "bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200"
-                }`}
-                aria-label="Set robot mood to sad"
-              >
-                😔 Sad
-              </button>
-            </div>
+            {showFAQ && (
+              <div className="mb-4">
+                <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
+                  Frequently Asked Questions
+                </div>
+                <div className="flex flex-col gap-2">
+                  {ROBOT_FAQ.map((faq) => (
+                    <button
+                      key={faq.id}
+                      onClick={() => showFAQAnswer(faq.id)}
+                      className="p-2 text-sm bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900 transition-all duration-200"
+                    >
+                      {faq.question}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
-            {/* Section title */}
-            <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
-              Color
-            </div>
+            {!showFAQ && (
+              <>
+                <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
+                  Color
+                </div>
 
-            {/* Color buttons */}
-            <div className="grid grid-cols-5 gap-2 mb-4">
-              <button
-                onClick={() => {
-                  setRobotColor(0x3b82f6); // Blue
-                  setWelcomeMessage("Blue is my favorite color!");
-                  setShowWelcome(true);
-                }}
-                className="w-8 h-8 bg-blue-500 rounded-md shadow-sm hover:scale-105 transition-transform duration-200"
-                aria-label="Set robot color to blue"
-              />
-              <button
-                onClick={() => {
-                  setRobotColor(0x10b981); // Green
-                  setWelcomeMessage("Green makes me feel refreshed!");
-                  setShowWelcome(true);
-                }}
-                className="w-8 h-8 bg-green-500 rounded-md shadow-sm hover:scale-105 transition-transform duration-200"
-                aria-label="Set robot color to green"
-              />
-              <button
-                onClick={() => {
-                  setRobotColor(0xef4444); // Red
-                  setWelcomeMessage("Red hot and ready to go!");
-                  setShowWelcome(true);
-                }}
-                className="w-8 h-8 bg-red-500 rounded-md shadow-sm hover:scale-105 transition-transform duration-200"
-                aria-label="Set robot color to red"
-              />
-              <button
-                onClick={() => {
-                  setRobotColor(0xa855f7); // Purple
-                  setWelcomeMessage("Purple royalty at your service!");
-                  setShowWelcome(true);
-                }}
-                className="w-8 h-8 bg-purple-500 rounded-md shadow-sm hover:scale-105 transition-transform duration-200"
-                aria-label="Set robot color to purple"
-              />
-              <button
-                onClick={toggleRainbow}
-                className={`w-8 h-8 bg-gradient-to-r from-red-500 via-green-500 to-blue-500 rounded-md shadow-sm hover:scale-105 transition-transform duration-200 ${
-                  isRainbow ? "ring-2 ring-yellow-400" : ""
-                }`}
-                aria-label="Toggle rainbow mode"
-              />
-            </div>
+                <div className="grid grid-cols-5 gap-2 mb-4">
+                  {ROBOT_COLORS.map((color) => (
+                    <button
+                      key={color.id}
+                      onClick={() => {
+                        setRobotColor(color.hexValue);
+                        setWelcomeMessage(color.message);
+                        setShowWelcome(true);
+                      }}
+                      className={`w-8 h-8 ${color.className} rounded-md shadow-sm hover:scale-105 transition-transform duration-200`}
+                      aria-label={`Set robot color to ${color.name}`}
+                    />
+                  ))}
+                  <button
+                    onClick={toggleRainbow}
+                    className={`w-8 h-8 bg-gradient-to-r from-red-500 via-green-500 to-blue-500 rounded-md shadow-sm hover:scale-105 transition-transform duration-200 ${
+                      isRainbow ? "ring-2 ring-yellow-400" : ""
+                    }`}
+                    aria-label="Toggle rainbow mode"
+                  />
+                </div>
 
-            {/* Section title */}
-            <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
-              Actions
-            </div>
+                <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
+                  Actions
+                </div>
 
-            {/* Action buttons */}
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              <button
-                onClick={() =>
-                  triggerAction("dance", "Look at my sweet dance moves! 💃")
-                }
-                className="p-1 text-sm bg-cyan-500 text-white rounded-md shadow-sm hover:bg-cyan-600 hover:scale-105 transition-all duration-200"
-                aria-label="Make robot dance"
-              >
-                💃 Dance
-              </button>
-              <button
-                onClick={() =>
-                  triggerAction("spin", "Wheeeeee! I'm spinning! 🌀")
-                }
-                className="p-1 text-sm bg-amber-500 text-white rounded-md shadow-sm hover:bg-amber-600 hover:scale-105 transition-all duration-200"
-                aria-label="Make robot spin"
-              >
-                🌀 Spin
-              </button>
-              <button
-                onClick={() =>
-                  triggerAction("jump", "Boing! Boing! Watch me jump! 🦘")
-                }
-                className="p-1 text-sm bg-lime-500 text-white rounded-md shadow-sm hover:bg-lime-600 hover:scale-105 transition-all duration-200"
-                aria-label="Make robot jump"
-              >
-                🦘 Jump
-              </button>
-              <button
-                onClick={() =>
-                  triggerAction("dizzy", "Whoa... I'm feeling dizzy... 😵‍💫")
-                }
-                className="p-1 text-sm bg-pink-500 text-white rounded-md shadow-sm hover:bg-pink-600 hover:scale-105 transition-all duration-200"
-                aria-label="Make robot dizzy"
-              >
-                😵‍💫 Dizzy
-              </button>
-            </div>
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  {ROBOT_ACTIONS.map((action) => (
+                    <button
+                      key={action.id}
+                      onClick={() =>
+                        triggerAction(action.animation, action.message)
+                      }
+                      className="p-1 text-sm bg-cyan-500 text-white rounded-md shadow-sm hover:bg-cyan-600 hover:scale-105 transition-all duration-200"
+                      aria-label={`Make robot ${action.name.toLowerCase()}`}
+                    >
+                      {action.icon} {action.name}
+                    </button>
+                  ))}
+                </div>
 
-            {/* Section title */}
-            <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
-              Accessories
-            </div>
+                <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
+                  Accessories
+                </div>
 
-            {/* Accessories buttons */}
-            <div className="flex gap-2">
-              <button
-                onClick={toggleMustache}
-                className={`p-1 text-sm flex-1 rounded-md shadow-sm transition-all duration-200 ${
-                  wearingMustache
-                    ? "bg-indigo-500 text-white"
-                    : "bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200"
-                }`}
-                aria-label="Toggle mustache"
-              >
-                👨 Mustache
-              </button>
-              <button
-                onClick={toggleSunglasses}
-                className={`p-1 text-sm flex-1 rounded-md shadow-sm transition-all duration-200 ${
-                  wearingSunglasses
-                    ? "bg-teal-500 text-white"
-                    : "bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200"
-                }`}
-                aria-label="Toggle sunglasses"
-              >
-                😎 Sunglasses
-              </button>
-            </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() =>
+                      toggleAccessory(
+                        "mustache",
+                        wearingMustache,
+                        setWearingMustache
+                      )
+                    }
+                    className={`p-1 text-sm flex-1 rounded-md shadow-sm transition-all duration-200 ${
+                      wearingMustache
+                        ? "bg-indigo-500 text-white"
+                        : "bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200"
+                    }`}
+                    aria-label="Toggle mustache"
+                  >
+                    👨 Mustache
+                  </button>
+                  <button
+                    onClick={() =>
+                      toggleAccessory(
+                        "sunglasses",
+                        wearingSunglasses,
+                        setWearingSunglasses
+                      )
+                    }
+                    className={`p-1 text-sm flex-1 rounded-md shadow-sm transition-all duration-200 ${
+                      wearingSunglasses
+                        ? "bg-teal-500 text-white"
+                        : "bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200"
+                    }`}
+                    aria-label="Toggle sunglasses"
+                  >
+                    😎 Sunglasses
+                  </button>
+                </div>
+              </>
+            )}
 
-            {/* Close button */}
             <div className="mt-4 text-center">
               <button
-                className="px-2 py-1 text-xs bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 transition-all duration-200"
-                onClick={handleCloseRobot}
-                aria-label="Close robot avatar"
+                className="px-2 py-1 text-xs bg-orange-500 text-white rounded-md shadow-sm hover:bg-orange-600 transition-all duration-200"
+                onClick={handleToggleRobot}
+                aria-label="Hide robot avatar"
               >
-                Close Robot
+                Hide Robot
               </button>
             </div>
           </div>

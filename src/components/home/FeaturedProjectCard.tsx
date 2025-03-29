@@ -27,7 +27,10 @@ export default function FeaturedProjectCard({
   const projectLink = homepage || html_url;
 
   return (
-    <div className="group relative rounded-xl overflow-hidden transition-all duration-300 hover:translate-y-[-8px]">
+    <div
+      className="group relative rounded-xl overflow-hidden transition-all duration-300 hover:translate-y-[-8px]"
+      id="robo-featured-projects"
+    >
       <Link
         href={projectLink}
         target="_blank"

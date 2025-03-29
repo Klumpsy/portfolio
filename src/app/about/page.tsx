@@ -46,12 +46,11 @@ async function getGitHubProfile(): Promise<GitHubProfile | null> {
 export default async function AboutPage() {
   const profile = await getGitHubProfile();
 
-  // Create a fallback profile if the fetch fails
   const fallbackProfile: GitHubProfile = profile || {
     login: "example",
     avatar_url: "/profile.jpg",
     name: "Bart Klumpers",
-    bio: "Fullstack Developer & JavaScript Enthusiast",
+    bio: "Developer & Typescript Enthusiast",
     followers: 0,
     following: 0,
     totalStars: 0,
@@ -66,7 +65,6 @@ export default async function AboutPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center py-28 px-4 sm:px-8 md:px-16 bg-slate-50 dark:bg-slate-900 overflow-hidden">
-      {/* Background decorations */}
       <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-blue-100/40 to-transparent dark:from-blue-900/20 dark:to-transparent"></div>
       <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-200/30 dark:bg-blue-800/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute top-1/4 -left-40 w-80 h-80 bg-blue-100/30 dark:bg-blue-900/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -87,14 +85,13 @@ export default async function AboutPage() {
 
           <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
             From education to technology, my path has been driven by a passion
-            for learning and creating meaningful experiences.
+            for learning new technologies and creating meaningful experiences.
+            Also, I love to code and build new projects.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
-          {/* Left column - Profile and Stats */}
           <div className="space-y-8 mt-8">
-            {/* Profile Card - removed glow effect */}
             <div className="relative">
               <div className="bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-xl border border-slate-200 dark:border-slate-700">
                 <div className="aspect-square relative">
@@ -105,6 +102,7 @@ export default async function AboutPage() {
                     className="object-cover object-center"
                     sizes="(max-width: 768px) 100vw, 50vw"
                     priority
+                    id="robo-profile-image"
                   />
                 </div>
                 <div className="p-6">
@@ -112,7 +110,15 @@ export default async function AboutPage() {
                     {fallbackProfile.name}
                   </h2>
                   <p className="text-slate-600 dark:text-slate-300 mt-2">
-                    Fullstack Developer & JavaScript Enthusiast
+                    Developer &{" "}
+                    <span className="text-yellow-300 dark:text-yellow-300 font-medium">
+                      JavaScript
+                    </span>
+                    /
+                    <span className="text-blue-500 dark:text-blue-400 font-medium">
+                      TypeScript
+                    </span>{" "}
+                    Enthusiast
                   </p>
                   {fallbackProfile.location && (
                     <p className="text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-2">
@@ -164,6 +170,7 @@ export default async function AboutPage() {
                       rel="noopener noreferrer"
                       className="p-2 rounded-lg text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                       aria-label="GitHub profile"
+                      id="robo-github-link"
                     >
                       <svg
                         className="w-5 h-5"
@@ -177,46 +184,6 @@ export default async function AboutPage() {
                         />
                       </svg>
                     </Link>
-                    {fallbackProfile.twitter_username && (
-                      <Link
-                        href={`https://twitter.com/${fallbackProfile.twitter_username}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 rounded-lg text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                        aria-label="Twitter profile"
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                        </svg>
-                      </Link>
-                    )}
-                    {fallbackProfile.blog && (
-                      <Link
-                        href={fallbackProfile.blog}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 rounded-lg text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                        aria-label="Personal website"
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-                          />
-                        </svg>
-                      </Link>
-                    )}
                   </div>
                 </div>
               </div>
@@ -313,7 +280,7 @@ export default async function AboutPage() {
                   </h3>
                 </div>
 
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-6" id="robo-tech-skills">
                   <div className="space-y-4">
                     <div>
                       <h4 className="font-semibold text-slate-800 dark:text-white mb-3 flex items-center gap-2">
@@ -324,7 +291,11 @@ export default async function AboutPage() {
                         {[
                           "JavaScript/TypeScript",
                           "React/Next.js",
+                          "Redux Toolkit",
+                          "Redux Saga",
                           "Tailwind CSS",
+                          "Sass",
+                          "Material UI",
                           "HTML5/CSS3",
                         ].map((skill) => (
                           <li key={skill} className="flex items-center gap-2">
@@ -350,24 +321,29 @@ export default async function AboutPage() {
                         Backend
                       </h4>
                       <ul className="space-y-2 text-slate-600 dark:text-slate-300 ml-3">
-                        {["Node.js", "Express", "MongoDB", "REST APIs"].map(
-                          (skill) => (
-                            <li key={skill} className="flex items-center gap-2">
-                              <svg
-                                className="w-4 h-4 text-blue-500 dark:text-blue-400 flex-shrink-0"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                              {skill}
-                            </li>
-                          )
-                        )}
+                        {[
+                          "Node.js",
+                          "Symfony",
+                          "PHP",
+                          "REST APIs",
+                          "SQL",
+                          "NoSQL",
+                        ].map((skill) => (
+                          <li key={skill} className="flex items-center gap-2">
+                            <svg
+                              className="w-4 h-4 text-blue-500 dark:text-blue-400 flex-shrink-0"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            {skill}
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   </div>
@@ -378,7 +354,7 @@ export default async function AboutPage() {
                         Tools
                       </h4>
                       <ul className="space-y-2 text-slate-600 dark:text-slate-300 ml-3">
-                        {["Git/GitHub", "VS Code", "Docker", "AWS"].map(
+                        {["Git/GitHub", "VS Code", "Docker", "Vercel"].map(
                           (skill) => (
                             <li key={skill} className="flex items-center gap-2">
                               <svg
@@ -407,8 +383,12 @@ export default async function AboutPage() {
                         {[
                           "Agile/Scrum",
                           "CI/CD",
-                          "Testing",
+                          "Cypress",
+                          "Jest",
+                          "PestPHP",
+                          "PHPUnit",
                           "Documentation",
+                          "Design Patterns (still learning but deeply interested)",
                         ].map((skill) => (
                           <li key={skill} className="flex items-center gap-2">
                             <svg

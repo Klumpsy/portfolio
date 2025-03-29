@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import FeaturedProjectCard from "@/components/home/FeaturedProjectCard";
-import RobotAvatar from "@/components/common/RobotAvatar";
 
 interface FeaturedProject {
   id: number;
@@ -40,7 +39,6 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden">
-      <RobotAvatar />
       <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-blue-100/40 to-transparent dark:from-blue-900/20 dark:to-transparent"></div>
 
       <div className="absolute -top-20 -left-20 w-96 h-96 bg-blue-200/30 dark:bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -95,6 +93,7 @@ export default async function Home() {
                   rel="noopener noreferrer"
                   className="text-slate-600 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transform hover:scale-110 transition-transform"
                   aria-label="GitHub profile"
+                  id="robo-github-link"
                 >
                   <svg
                     className="w-6 h-6"
@@ -160,6 +159,7 @@ export default async function Home() {
                     fill
                     priority
                     className="object-cover z-10 mix-blend-normal"
+                    id="robo-profile-image"
                   />
                 </div>
 
