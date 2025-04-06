@@ -4,6 +4,12 @@ import GitHubActivityGraph from "@/components/about/GitHubActivityGraph";
 import Link from "next/link";
 import { GitHubProfile } from "./types";
 import { getGitHubProfile } from "./controller";
+import {
+  BackendSkillsData,
+  FrontendSkillsData,
+  OtherSkillsData,
+  ToolsSkillsData,
+} from "@/components/about/skillsData";
 export default async function AboutPage() {
   const profile = await getGitHubProfile();
 
@@ -163,11 +169,8 @@ export default async function AboutPage() {
             {profile && <GitHubActivityGraph username={profile.login} />}
           </div>
 
-          {/* Right column - Timeline and Skills */}
           <div className="space-y-8 mt-8">
-            {/* My Story */}
             <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden relative">
-              {/* Decorative overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-transparent to-blue-100/20 dark:from-blue-900/10 dark:via-transparent dark:to-blue-800/10 pointer-events-none"></div>
 
               <div className="p-6 relative">
@@ -187,9 +190,9 @@ export default async function AboutPage() {
                         Teaching Background
                       </h4>
                       <p className="text-slate-600 dark:text-slate-300 mt-2">
-                        My journey began in education, where I developed a deep
-                        understanding of how people learn and interact with
-                        technology.
+                        It all began in the world of education, where I learned
+                        the importance of intuitive design and meaningful user
+                        interaction with technology.
                       </p>
                     </div>
                   </div>
@@ -202,9 +205,10 @@ export default async function AboutPage() {
                         Problem Solving Through Code
                       </h4>
                       <p className="text-slate-600 dark:text-slate-300 mt-2">
-                        I discovered my passion for programming when I started
-                        creating tools to enhance the learning experience. This
-                        led me to explore the world of web development.
+                        Creating tools to make learning more engaging is what
+                        first drew me into programming — and from there, I found
+                        my way into web development, inspired by the creative
+                        challenge it brought with it.
                       </p>
                     </div>
                   </div>
@@ -217,10 +221,14 @@ export default async function AboutPage() {
                         Professional Development
                       </h4>
                       <p className="text-slate-600 dark:text-slate-300 mt-2">
-                        Today, I focus on building modern web applications and
-                        creating engaging user experiences. My background in
-                        education helps me approach development with a
-                        user-centric mindset.
+                        I love pushing myself to learn new things and refine my
+                        skills — all to create smoother, smarter web
+                        experiences. Three years into my professional career as
+                        a web developer, I’ve learned so much, and I’m still
+                        learning every day. My time in education taught me to
+                        always consider how users think, learn, and interact —
+                        and the more I grow in this field, the more I love what
+                        I do.
                       </p>
                     </div>
                   </div>
@@ -249,16 +257,7 @@ export default async function AboutPage() {
                         Frontend
                       </h4>
                       <ul className="space-y-2 text-slate-600 dark:text-slate-300 ml-3">
-                        {[
-                          "JavaScript/TypeScript",
-                          "React/Next.js",
-                          "Redux Toolkit",
-                          "Redux Saga",
-                          "Tailwind CSS",
-                          "Sass",
-                          "Material UI",
-                          "HTML5/CSS3",
-                        ].map((skill) => (
+                        {FrontendSkillsData.map((skill) => (
                           <li key={skill} className="flex items-center gap-2">
                             <svg
                               className="w-4 h-4 text-blue-500 dark:text-blue-400 flex-shrink-0"
@@ -282,14 +281,7 @@ export default async function AboutPage() {
                         Backend
                       </h4>
                       <ul className="space-y-2 text-slate-600 dark:text-slate-300 ml-3">
-                        {[
-                          "Node.js",
-                          "Symfony",
-                          "PHP",
-                          "REST APIs",
-                          "SQL",
-                          "NoSQL",
-                        ].map((skill) => (
+                        {BackendSkillsData.map((skill) => (
                           <li key={skill} className="flex items-center gap-2">
                             <svg
                               className="w-4 h-4 text-blue-500 dark:text-blue-400 flex-shrink-0"
@@ -315,24 +307,22 @@ export default async function AboutPage() {
                         Tools
                       </h4>
                       <ul className="space-y-2 text-slate-600 dark:text-slate-300 ml-3">
-                        {["Git/GitHub", "VS Code", "Docker", "Vercel"].map(
-                          (skill) => (
-                            <li key={skill} className="flex items-center gap-2">
-                              <svg
-                                className="w-4 h-4 text-blue-500 dark:text-blue-400 flex-shrink-0"
-                                fill="currentColor"
-                                viewBox="0 0 20 20"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                              {skill}
-                            </li>
-                          )
-                        )}
+                        {ToolsSkillsData.map((skill) => (
+                          <li key={skill} className="flex items-center gap-2">
+                            <svg
+                              className="w-4 h-4 text-blue-500 dark:text-blue-400 flex-shrink-0"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            {skill}
+                          </li>
+                        ))}
                       </ul>
                     </div>
                     <div>
@@ -341,16 +331,7 @@ export default async function AboutPage() {
                         Other
                       </h4>
                       <ul className="space-y-2 text-slate-600 dark:text-slate-300 ml-3">
-                        {[
-                          "Agile/Scrum",
-                          "CI/CD",
-                          "Cypress",
-                          "Jest",
-                          "PestPHP",
-                          "PHPUnit",
-                          "Documentation",
-                          "Design Patterns (still learning but deeply interested)",
-                        ].map((skill) => (
+                        {OtherSkillsData.map((skill) => (
                           <li key={skill} className="flex items-center gap-2">
                             <svg
                               className="w-4 h-4 text-blue-500 dark:text-blue-400 flex-shrink-0"

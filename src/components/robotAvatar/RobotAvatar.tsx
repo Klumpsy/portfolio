@@ -342,22 +342,18 @@ export default function RobotAvatar() {
         const rotationAmount = 0.2;
 
         if (robotAction === "idle") {
-          // Default floating animation
           robot.position.y = Math.sin(Date.now() * floatSpeed) * floatAmount;
           robot.rotation.y =
             Math.sin(Date.now() * rotationSpeed) * rotationAmount;
         } else if (robotAction === "dance") {
-          // Dancing animation
           const time = Date.now() * 0.003;
           robot.position.y = Math.sin(time * 2) * 0.2;
           robot.rotation.y += 0.05;
           robot.rotation.z = Math.sin(time * 3) * 0.2;
           robot.scale.y = 1 + Math.sin(time * 4) * 0.1;
         } else if (robotAction === "spin") {
-          // Fast spinning
           robot.rotation.y += 0.1;
         } else if (robotAction === "jump") {
-          // Jump animation
           const jumpTime = Date.now() * 0.002;
           const jumpCurve = Math.sin(jumpTime * 2);
           robot.position.y = Math.max(0, jumpCurve) * 0.5;
@@ -381,8 +377,6 @@ export default function RobotAvatar() {
           rightEye.scale.set(eyeScale, eyeScale, 1);
         }
 
-        // Eye animations
-        // Random blinking
         const eyes = [leftEye, rightEye];
         eyes.forEach((eye) => {
           const blinkChance = 0.005;
@@ -420,11 +414,8 @@ export default function RobotAvatar() {
     };
 
     window.addEventListener("resize", handleResize);
-
-    // Initial resize call
     handleResize();
 
-    // Reset action after timeout
     if (actionTimeoutRef.current) {
       clearTimeout(actionTimeoutRef.current);
     }
@@ -432,7 +423,7 @@ export default function RobotAvatar() {
     if (robotAction !== "idle") {
       actionTimeoutRef.current = setTimeout(() => {
         setRobotAction("idle");
-      }, 4000); // Actions run for 4 seconds
+      }, 4000);
     }
 
     // Cleanup
@@ -635,7 +626,7 @@ export default function RobotAvatar() {
         {showMenu && (
           <div
             className={`absolute ${
-              isMobile ? "bottom-50 left-0 mb-0" : "top-full left-0 mt-8"
+              isMobile ? "bottom-50 left-0 mb-0" : "top-full left-0 mt-14"
             } bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-slate-200 dark:border-slate-700 p-3 w-64 max-w-[calc(100vw-80px)] z-50`}
           >
             <button

@@ -35,9 +35,9 @@ export default async function Home() {
               </h1>
 
               <p className="text-xl text-slate-600 dark:text-slate-300">
-                I love Javascript/Typescript in every way, shape and form!
-                Creating modern web experiences with clean code is what i love
-                to do.
+                I’m passionate about clean code and modern web design using
+                JavaScript and TypeScript — and I never stop learning or
+                improving.
               </p>
 
               <div className="flex flex-wrap gap-4 pt-6">
