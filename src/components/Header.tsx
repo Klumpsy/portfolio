@@ -10,12 +10,10 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
-  // Handle theme mounting
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
@@ -25,12 +23,10 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  // Prevent scrolling when mobile menu is open
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -58,7 +54,6 @@ export default function Header() {
       >
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex justify-between items-center h-20">
-            {/* Logo */}
             <div className="relative z-10">
               <Link
                 href="/"
@@ -74,7 +69,6 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-1">
               {[
                 { name: "Home", path: "/" },
@@ -108,9 +102,7 @@ export default function Header() {
               </Link>
             </nav>
 
-            {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center space-x-2">
-              {/* Menu Toggle */}
               <button
                 type="button"
                 className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -152,7 +144,6 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay - Now outside the header component */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 bg-white dark:bg-slate-900 flex flex-col md:hidden">
           <div className="flex justify-end p-4">
