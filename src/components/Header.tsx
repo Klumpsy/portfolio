@@ -101,7 +101,7 @@ export default function Header() {
               <div className="w-px h-6 mx-2 bg-slate-200 dark:bg-slate-700"></div>
 
               <Link
-                href="mailto:info@bartklumpers.com"
+                href="mailto:bart_klumperman@live.nl"
                 className="ml-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium shadow-md hover:shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-300 hover:translate-y-[-2px]"
               >
                 Contact Me
@@ -200,7 +200,7 @@ export default function Header() {
             ))}
 
             <Link
-              href="mailto:info@bartklumpers.com"
+              href="mailto:bart_klumperman@live.nl"
               className="mt-4 px-6 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-lg font-medium shadow-md hover:shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 transition-all duration-300"
               onClick={() => setMobileMenuOpen(false)}
             >
