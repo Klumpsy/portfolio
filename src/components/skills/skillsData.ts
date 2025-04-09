@@ -80,7 +80,7 @@ export const skillsData: Skill[] = [
     proficiency: 75,
     category: "backend",
     description:
-      "Symfony has been my main PHP framework for backend development. I’ve built simple APIs and complexbackend logic with it, and I appreciate its structure and built-in tools. Still learning the deeper concepts.",
+      "Symfony has been my main PHP framework for backend development. I’ve built simple APIs and complex backend logic with it, and I appreciate its structure and built-in tools. Still learning the deeper concepts.",
   },
   {
     name: "Node.js",

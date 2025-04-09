@@ -25,7 +25,6 @@ export default function GitHubStats({
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 relative">
-      {/* Decorative gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50/40 via-transparent to-blue-100/30 dark:from-blue-900/10 dark:via-transparent dark:to-blue-800/10 pointer-events-none"></div>
 
       <div className="relative p-6">
@@ -38,7 +37,6 @@ export default function GitHubStats({
           </h3>
         </div>
 
-        {/* Stats cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
           {[
             { label: "Public Repos", value: publicRepos, icon: "📁" },
@@ -68,7 +66,6 @@ export default function GitHubStats({
           ))}
         </div>
 
-        {/* Bio section */}
         {bio && (
           <div className="mb-6 bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
             <h3 className="flex items-center text-lg font-semibold text-slate-800 dark:text-white mb-3">
@@ -91,7 +88,6 @@ export default function GitHubStats({
           </div>
         )}
 
-        {/* Languages section */}
         <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
           <h3 className="flex items-center text-lg font-semibold text-slate-800 dark:text-white mb-4">
             <span className="mr-2">🔤</span>

@@ -34,7 +34,6 @@ export async function GET() {
       'User-Agent': 'Portfolio-App'
     };
     
-    // Add token if available
     if (token) {
       headers['Authorization'] = `token ${token}`;
     }
@@ -48,8 +47,7 @@ export async function GET() {
     }
 
     const repos = await response.json() as GitHubRepo[];
-    
-    // Filter repos that have the featured topic
+  
     const featuredProjects = repos
       .filter((repo) => repo.topics?.includes('featured'))
       .map((repo): FeaturedProject => ({

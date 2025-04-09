@@ -9,11 +9,6 @@ interface GitHubRepo {
   fork: boolean;
 }
 
-interface GitHubEvent {
-  type: string;
-  created_at: string;
-}
-
 interface GitHubProfile {
   login: string;
   avatar_url: string;
@@ -31,25 +26,64 @@ interface GitHubProfile {
   topLanguages: { name: string; percentage: number }[];
 }
 
+async function getContributionCount(username: string, token?: string): Promise<number> {
+  const query = `
+    query($username: String!) {
+      user(login: $username) {
+        contributionsCollection(contributionTypes: [COMMIT, PULL_REQUEST, ISSUE, REPOSITORY], from: "2010-01-01T00:00:00Z", to: "2030-12-31T23:59:59Z") {
+          totalCommitContributions
+          totalPullRequestContributions
+          totalIssueContributions
+          totalRepositoryContributions
+        }
+      }
+    }
+  `;
+
+  const response = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: {
+      'Authorization': token ? `Bearer ${token}` : '',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query,
+      variables: { username },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`GitHub GraphQL API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const contributions = data.data.user.contributionsCollection;
+  
+  return (
+    contributions.totalCommitContributions +
+    contributions.totalPullRequestContributions +
+    contributions.totalIssueContributions +
+    contributions.totalRepositoryContributions
+  );
+}
+
 export async function GET() {
   try {
     const username = process.env.GITHUB_USERNAME || 'Klumpsy';
+    const token = process.env.GITHUB_TOKEN;
     
-    // Prepare headers
     const headers: HeadersInit = {
       'Accept': 'application/vnd.github.v3+json',
       'User-Agent': 'Portfolio-App'
     };
     
-    // Add authorization token if available
-    if (process.env.GITHUB_TOKEN) {
-      headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
+    if (token) {
+      headers['Authorization'] = `token ${token}`;
     }
 
-    // Fetch user profile
     const profileResponse = await fetch(`https://api.github.com/users/${username}`, {
       headers,
-      next: { revalidate: 3600 } // Cache for 1 hour
+      next: { revalidate: 3600 }
     });
     
     if (!profileResponse.ok) {
@@ -58,7 +92,6 @@ export async function GET() {
     
     const profileData = await profileResponse.json();
 
-    // Fetch user repositories
     const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`, {
       headers,
       next: { revalidate: 3600 }
@@ -70,10 +103,8 @@ export async function GET() {
     
     const repos: GitHubRepo[] = await reposResponse.json();
 
-    // Calculate total stars and language percentages
     const totalStars = repos.reduce((acc, repo) => acc + repo.stargazers_count, 0);
-    
-    // Calculate language percentages
+   
     const languageStats = repos.reduce((acc, repo) => {
       if (repo.language && !repo.fork) {
         acc[repo.language] = (acc[repo.language] || 0) + 1;
@@ -81,7 +112,7 @@ export async function GET() {
       return acc;
     }, {} as Record<string, number>);
 
-    const totalRepos = Object.values(languageStats).reduce((acc, count) => acc + count, 0) || 1; // Avoid division by zero
+    const totalRepos = Object.values(languageStats).reduce((acc, count) => acc + count, 0) || 1;
     const topLanguages = Object.entries(languageStats)
       .map(([name, count]) => ({
         name,
@@ -90,23 +121,7 @@ export async function GET() {
       .sort((a, b) => b.percentage - a.percentage)
       .slice(0, 5);
 
-    // Fetch contribution count (events)
-    const eventsResponse = await fetch(
-      `https://api.github.com/users/${username}/events?per_page=100`,
-      { 
-        headers,
-        next: { revalidate: 3600 }
-      }
-    );
-    
-    let contributions = 0;
-    
-    if (eventsResponse.ok) {
-      const events: GitHubEvent[] = await eventsResponse.json();
-      contributions = events.filter(event => event.type === 'PushEvent').length;
-    } else {
-      console.warn('Could not fetch GitHub events, defaulting contributions to 0');
-    }
+    const contributions = await getContributionCount(username, token);
 
     const profile: GitHubProfile = {
       login: profileData.login,

@@ -29,12 +29,11 @@ export default async function ProjectsPage() {
             Javascript/typescript, most of it will be in React/Next.js. And
             ofcourse I love to try different frameworks and libraries so there
             might be small project that are just POC&apos;s. These are all
-            personal projects, most of my code is in company repositories which
-            are not public.
+            personal projects, most of my code resides in company repositories
+            which are not public.
           </p>
         </div>
 
-        {/* Show all projects in a single section */}
         <div className="mb-16">
           <div className="flex items-center gap-2 mb-8">
             <div className="flex-shrink-0 w-1 h-6 bg-blue-500 dark:bg-blue-400 rounded"></div>
@@ -81,7 +80,6 @@ export default async function ProjectsPage() {
           </div>
         )}
 
-        {/* Call to action - without glow effect */}
         <div className="mt-16 text-center">
           <a
             href="https://github.com/Klumpsy"
