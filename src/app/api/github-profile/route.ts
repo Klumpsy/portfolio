@@ -1,8 +1,18 @@
 import { NextResponse } from 'next/server';
 
-// Add route segment config to prevent caching
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 3600;
+
+let profileCache: {
+  data: GitHubProfile | null;
+  timestamp: number;
+} = {
+  data: null,
+  timestamp: 0
+};
+
+// Cache expiration time (1 hour)
+const CACHE_EXPIRATION = 3600000;
 
 interface GitHubRepo {
   name: string;
@@ -134,6 +144,14 @@ export async function GET() {
     console.log(`GITHUB_TOKEN: ${process.env.GITHUB_TOKEN ? 'set' : 'not set'}`);
     console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
     
+    const now = Date.now();
+    if (profileCache.data && (now - profileCache.timestamp) < CACHE_EXPIRATION) {
+      console.log('Returning cached profile data');
+      return NextResponse.json({ profile: profileCache.data });
+    }
+    
+    console.log('Cache expired or empty, fetching fresh data');
+    
     const username = process.env.GITHUB_USERNAME || 'Klumpsy';
     const token = process.env.GITHUB_TOKEN;
     
@@ -155,7 +173,7 @@ export async function GET() {
     console.log('Fetching user profile from GitHub REST API');
     const profileResponse = await fetch(`https://api.github.com/users/${username}`, {
       headers,
-      cache: 'no-store'
+      next: { revalidate: 3600 } // Cache for 1 hour
     });
     
     console.log(`Profile response status: ${profileResponse.status}`);
@@ -172,7 +190,7 @@ export async function GET() {
     console.log('Fetching repositories from GitHub REST API');
     const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`, {
       headers,
-      cache: 'no-store'
+      next: { revalidate: 3600 } // Cache for 1 hour
     });
     
     console.log(`Repos response status: ${reposResponse.status}`);
@@ -234,7 +252,13 @@ export async function GET() {
       topLanguages,
     };
 
-    console.log('GitHub profile constructed successfully');
+    // Update cache
+    profileCache = {
+      data: profile,
+      timestamp: now
+    };
+    
+    console.log('GitHub profile constructed successfully and cached');
     return NextResponse.json({ profile });
   } catch (error) {
     console.error('Error fetching GitHub profile:', error);
@@ -242,6 +266,13 @@ export async function GET() {
       console.error('Error details:', error.message);
       console.error('Error stack:', error.stack);
     }
+    
+    // If we have cached data, return it as fallback
+    if (profileCache.data) {
+      console.log('Returning cached data as fallback due to error');
+      return NextResponse.json({ profile: profileCache.data });
+    }
+    
     return NextResponse.json(
       { error: 'Failed to fetch GitHub profile', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
