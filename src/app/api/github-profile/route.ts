@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 
+// Add route segment config to prevent caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface GitHubRepo {
   name: string;
   description: string | null;
@@ -125,6 +129,10 @@ async function getContributionCount(username: string, token?: string): Promise<n
 export async function GET() {
   try {
     console.log('GitHub profile API route called');
+    console.log('Environment variables:');
+    console.log(`GITHUB_USERNAME: ${process.env.GITHUB_USERNAME || 'not set'}`);
+    console.log(`GITHUB_TOKEN: ${process.env.GITHUB_TOKEN ? 'set' : 'not set'}`);
+    console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
     
     const username = process.env.GITHUB_USERNAME || 'Klumpsy';
     const token = process.env.GITHUB_TOKEN;
@@ -147,7 +155,7 @@ export async function GET() {
     console.log('Fetching user profile from GitHub REST API');
     const profileResponse = await fetch(`https://api.github.com/users/${username}`, {
       headers,
-      next: { revalidate: 3600 }
+      cache: 'no-store'
     });
     
     console.log(`Profile response status: ${profileResponse.status}`);
@@ -164,7 +172,7 @@ export async function GET() {
     console.log('Fetching repositories from GitHub REST API');
     const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`, {
       headers,
-      next: { revalidate: 3600 }
+      cache: 'no-store'
     });
     
     console.log(`Repos response status: ${reposResponse.status}`);

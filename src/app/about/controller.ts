@@ -21,7 +21,7 @@ export async function getGitHubProfile(): Promise<GitHubProfile | null> {
       console.log(`Fetching GitHub profile from: ${apiUrl}`);
       
       const res = await fetch(apiUrl, {
-        next: { revalidate: 3600 },
+        cache: 'no-store',
       });
   
       console.log(`Response status: ${res.status}`);
