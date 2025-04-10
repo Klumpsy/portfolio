@@ -30,16 +30,19 @@ async function getContributionCount(username: string, token?: string): Promise<n
   console.log(`Getting contribution count for username: ${username}`);
   console.log(`Token available: ${token ? 'Yes' : 'No'}`);
   
+  // Query for the contribution graph data
   const query = `
     query($username: String!) {
       user(login: $username) {
-        contributionsCollection(from: "2010-01-01T00:00:00Z", to: "2030-12-31T23:59:59Z") {
-          totalCommitContributions
-          totalPullRequestContributions
-          totalIssueContributions
-          totalRepositoryContributions
-          restrictedContributionsCount
-          totalCommitContributionsToNonPublicRepositories
+        contributionsCollection {
+          contributionCalendar {
+            totalContributions
+            weeks {
+              contributionDays {
+                contributionCount
+              }
+            }
+          }
         }
       }
     }
@@ -92,21 +95,30 @@ async function getContributionCount(username: string, token?: string): Promise<n
       throw new Error('GraphQL response missing contributionsCollection property');
     }
     
-    const contributions = data.data.user.contributionsCollection;
-    console.log('Contributions data retrieved successfully');
-    console.log('Contributions data:', JSON.stringify(contributions));
+    if (!data.data.user.contributionsCollection.contributionCalendar) {
+      console.error('GraphQL response missing contributionCalendar property');
+      console.log('Contributions data:', JSON.stringify(data.data.user.contributionsCollection));
+      throw new Error('GraphQL response missing contributionCalendar property');
+    }
     
-    // Calculate total contributions including all types
-    const total = 
-      contributions.totalCommitContributions +
-      contributions.totalPullRequestContributions +
-      contributions.totalIssueContributions +
-      contributions.totalRepositoryContributions +
-      (contributions.restrictedContributionsCount || 0) +
-      (contributions.totalCommitContributionsToNonPublicRepositories || 0);
+    const contributionCalendar = data.data.user.contributionsCollection.contributionCalendar;
+    console.log('Contribution calendar data retrieved successfully');
     
-    console.log(`Total contributions: ${total}`);
-    return total;
+    // Get the total contributions from the calendar
+    const totalContributions = contributionCalendar.totalContributions;
+    console.log(`Total contributions from calendar: ${totalContributions}`);
+    
+    // Alternative: Calculate total from all contribution days
+    let calculatedTotal = 0;
+    contributionCalendar.weeks.forEach((week: { contributionDays: { contributionCount: number }[] }) => {
+      week.contributionDays.forEach((day: { contributionCount: number }) => {
+        calculatedTotal += day.contributionCount;
+      });
+    });
+    console.log(`Calculated total from days: ${calculatedTotal}`);
+    
+    // Use the total from the calendar, which is what GitHub displays
+    return totalContributions;
   } catch (error) {
     console.error('Error parsing GraphQL response:', error);
     console.log('Raw response:', responseText);
