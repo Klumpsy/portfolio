@@ -33,7 +33,7 @@ async function getContributionCount(username: string, token?: string): Promise<n
   const query = `
     query($username: String!) {
       user(login: $username) {
-        contributionsCollection(contributionTypes: [COMMIT, PULL_REQUEST, ISSUE, REPOSITORY], from: "2010-01-01T00:00:00Z", to: "2030-12-31T23:59:59Z") {
+        contributionsCollection(from: "2010-01-01T00:00:00Z", to: "2030-12-31T23:59:59Z") {
           totalCommitContributions
           totalPullRequestContributions
           totalIssueContributions
@@ -162,67 +162,4 @@ export async function GET() {
     }
     
     const repos: GitHubRepo[] = await reposResponse.json();
-    console.log(`Fetched ${repos.length} repositories`);
-
-    const totalStars = repos.reduce((acc, repo) => acc + repo.stargazers_count, 0);
-    console.log(`Total stars: ${totalStars}`);
-   
-    const languageStats = repos.reduce((acc, repo) => {
-      if (repo.language && !repo.fork) {
-        acc[repo.language] = (acc[repo.language] || 0) + 1;
-      }
-      return acc;
-    }, {} as Record<string, number>);
-
-    const totalRepos = Object.values(languageStats).reduce((acc, count) => acc + count, 0) || 1;
-    const topLanguages = Object.entries(languageStats)
-      .map(([name, count]) => ({
-        name,
-        percentage: Math.round((count / totalRepos) * 100),
-      }))
-      .sort((a, b) => b.percentage - a.percentage)
-      .slice(0, 5);
-    
-    console.log('Top languages calculated');
-
-    console.log('Fetching contribution count');
-    let contributions = 0;
-    try {
-      contributions = await getContributionCount(username, token);
-      console.log(`Contribution count: ${contributions}`);
-    } catch (error) {
-      console.error('Error fetching contribution count:', error);
-      console.log('Continuing without contribution data');
-    }
-
-    const profile: GitHubProfile = {
-      login: profileData.login,
-      avatar_url: profileData.avatar_url,
-      name: profileData.name,
-      bio: profileData.bio,
-      location: profileData.location,
-      company: profileData.company,
-      blog: profileData.blog,
-      twitter_username: profileData.twitter_username,
-      followers: profileData.followers,
-      following: profileData.following,
-      publicRepos: profileData.public_repos,
-      totalStars,
-      contributions,
-      topLanguages,
-    };
-
-    console.log('GitHub profile constructed successfully');
-    return NextResponse.json({ profile });
-  } catch (error) {
-    console.error('Error fetching GitHub profile:', error);
-    if (error instanceof Error) {
-      console.error('Error details:', error.message);
-      console.error('Error stack:', error.stack);
-    }
-    return NextResponse.json(
-      { error: 'Failed to fetch GitHub profile', details: error instanceof Error ? error.message : String(error) },
-      { status: 500 }
-    );
-  }
-} 
+    console.log(`
