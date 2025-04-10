@@ -87,18 +87,21 @@ export async function GET() {
     });
     
     if (!profileResponse.ok) {
-      throw new Error(`GitHub API error: ${profileResponse.status} ${await profileResponse.text()}`);
+      const errorText = await profileResponse.text();
+      console.error(`GitHub API error: ${profileResponse.status} ${errorText}`);
+      throw new Error(`GitHub API error: ${profileResponse.status} ${errorText}`);
     }
     
     const profileData = await profileResponse.json();
-
     const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`, {
       headers,
       next: { revalidate: 3600 }
     });
     
     if (!reposResponse.ok) {
-      throw new Error(`GitHub API error fetching repos: ${reposResponse.status}`);
+      const errorText = await reposResponse.text();
+      console.error(`GitHub API error fetching repos: ${reposResponse.status} ${errorText}`);
+      throw new Error(`GitHub API error fetching repos: ${reposResponse.status} ${errorText}`);
     }
     
     const repos: GitHubRepo[] = await reposResponse.json();

@@ -2,12 +2,22 @@ import { GitHubProfile } from "./types";
 
 export async function getGitHubProfile(): Promise<GitHubProfile | null> {
     try {
-      const baseUrl =
-        process.env.NEXT_PUBLIC_BASE_URL ||
-        process.env.VERCEL_URL ||
-        "http://localhost:3000";
+
+      let baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      
+  
+      if (!baseUrl && process.env.VERCEL_URL) {
+        baseUrl = `https://${process.env.VERCEL_URL}`;
+      }
+      
+      if (!baseUrl) {
+        baseUrl = "http://localhost:3000";
+      }
+      
+      console.log(`Fetching GitHub profile from: ${baseUrl}/api/github-profile`);
+      
       const res = await fetch(`${baseUrl}/api/github-profile`, {
-        next: { revalidate: 1800 },
+        next: { revalidate: 3600 },
       });
   
       if (!res.ok) {
