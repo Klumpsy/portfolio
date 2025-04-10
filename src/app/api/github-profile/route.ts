@@ -3,17 +3,6 @@ import { NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const revalidate = 3600;
 
-let profileCache: {
-  data: GitHubProfile | null;
-  timestamp: number;
-} = {
-  data: null,
-  timestamp: 0
-};
-
-// Cache expiration time (1 hour)
-const CACHE_EXPIRATION = 3600000;
-
 interface GitHubRepo {
   name: string;
   description: string | null;
@@ -144,14 +133,6 @@ export async function GET() {
     console.log(`GITHUB_TOKEN: ${process.env.GITHUB_TOKEN ? 'set' : 'not set'}`);
     console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
     
-    const now = Date.now();
-    if (profileCache.data && (now - profileCache.timestamp) < CACHE_EXPIRATION) {
-      console.log('Returning cached profile data');
-      return NextResponse.json({ profile: profileCache.data });
-    }
-    
-    console.log('Cache expired or empty, fetching fresh data');
-    
     const username = process.env.GITHUB_USERNAME || 'Klumpsy';
     const token = process.env.GITHUB_TOKEN;
     
@@ -251,26 +232,23 @@ export async function GET() {
       contributions,
       topLanguages,
     };
-
-    // Update cache
-    profileCache = {
-      data: profile,
-      timestamp: now
-    };
     
-    console.log('GitHub profile constructed successfully and cached');
-    return NextResponse.json({ profile });
+    console.log('GitHub profile constructed successfully');
+    
+    // Return response with caching headers
+    return NextResponse.json(
+      { profile },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+        },
+      }
+    );
   } catch (error) {
     console.error('Error fetching GitHub profile:', error);
     if (error instanceof Error) {
       console.error('Error details:', error.message);
       console.error('Error stack:', error.stack);
-    }
-    
-    // If we have cached data, return it as fallback
-    if (profileCache.data) {
-      console.log('Returning cached data as fallback due to error');
-      return NextResponse.json({ profile: profileCache.data });
     }
     
     return NextResponse.json(
