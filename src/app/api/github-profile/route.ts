@@ -30,7 +30,6 @@ async function getContributionCount(username: string, token?: string): Promise<n
   console.log(`Getting contribution count for username: ${username}`);
   console.log(`Token available: ${token ? 'Yes' : 'No'}`);
   
-  // Query for the contribution graph data
   const query = `
     query($username: String!) {
       user(login: $username) {
@@ -104,11 +103,9 @@ async function getContributionCount(username: string, token?: string): Promise<n
     const contributionCalendar = data.data.user.contributionsCollection.contributionCalendar;
     console.log('Contribution calendar data retrieved successfully');
     
-    // Get the total contributions from the calendar
     const totalContributions = contributionCalendar.totalContributions;
     console.log(`Total contributions from calendar: ${totalContributions}`);
     
-    // Alternative: Calculate total from all contribution days
     let calculatedTotal = 0;
     contributionCalendar.weeks.forEach((week: { contributionDays: { contributionCount: number }[] }) => {
       week.contributionDays.forEach((day: { contributionCount: number }) => {
@@ -117,7 +114,6 @@ async function getContributionCount(username: string, token?: string): Promise<n
     });
     console.log(`Calculated total from days: ${calculatedTotal}`);
     
-    // Use the total from the calendar, which is what GitHub displays
     return totalContributions;
   } catch (error) {
     console.error('Error parsing GraphQL response:', error);
