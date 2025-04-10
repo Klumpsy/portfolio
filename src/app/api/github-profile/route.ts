@@ -38,6 +38,8 @@ async function getContributionCount(username: string, token?: string): Promise<n
           totalPullRequestContributions
           totalIssueContributions
           totalRepositoryContributions
+          restrictedContributionsCount
+          totalCommitContributionsToNonPublicRepositories
         }
       }
     }
@@ -92,12 +94,16 @@ async function getContributionCount(username: string, token?: string): Promise<n
     
     const contributions = data.data.user.contributionsCollection;
     console.log('Contributions data retrieved successfully');
+    console.log('Contributions data:', JSON.stringify(contributions));
     
+    // Calculate total contributions including all types
     const total = 
       contributions.totalCommitContributions +
       contributions.totalPullRequestContributions +
       contributions.totalIssueContributions +
-      contributions.totalRepositoryContributions;
+      contributions.totalRepositoryContributions +
+      (contributions.restrictedContributionsCount || 0) +
+      (contributions.totalCommitContributionsToNonPublicRepositories || 0);
     
     console.log(`Total contributions: ${total}`);
     return total;
