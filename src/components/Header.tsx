@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { getMenuRoutes } from "@/config/routeHelper";
 
 export default function Header() {
   const [mounted, setMounted] = useState(false);
@@ -70,12 +71,7 @@ export default function Header() {
             </div>
 
             <nav className="hidden md:flex items-center space-x-1">
-              {[
-                { name: "Home", path: "/" },
-                { name: "Projects", path: "/projects" },
-                { name: "Skills", path: "/skills" },
-                { name: "About", path: "/about" },
-              ].map((item) => (
+              {getMenuRoutes().map((item) => (
                 <Link
                   key={item.name}
                   href={item.path}
@@ -170,12 +166,7 @@ export default function Header() {
           </div>
 
           <div className="flex-1 flex flex-col items-center justify-center gap-6 px-8">
-            {[
-              { name: "Home", path: "/" },
-              { name: "Projects", path: "/projects" },
-              { name: "Skills", path: "/skills" },
-              { name: "About", path: "/about" },
-            ].map((item) => (
+            {getMenuRoutes().map((item) => (
               <Link
                 key={item.name}
                 href={item.path}
