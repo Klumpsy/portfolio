@@ -1,6 +1,7 @@
 import React from "react";
+import { ReduxTimelineProps } from "./types";
 
-export const TimelineEntry = ({
+const ReduxTimeline: React.FunctionComponent<ReduxTimelineProps> = ({
   action,
   state,
   index,
@@ -39,3 +40,5 @@ export const TimelineEntry = ({
     </div>
   );
 };
+
+export default ReduxTimeline;

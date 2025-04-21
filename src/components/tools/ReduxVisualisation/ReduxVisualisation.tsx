@@ -1,37 +1,53 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSelector, useDispatch, Provider } from "react-redux";
-import { ActionBlock } from "../ActionBlock/ActionBlock";
+import ActionBlock from "@/components/tools/ActionBlock";
 import ReducerBlock from "@/components/tools/ReducerBlock";
 import StateBlock from "@/components/tools/StateBlock";
 import { decrement, increment, incrementByAmount } from "@/redux/counterSlice";
-import { TimelineEntry } from "../ReduxTimeline/ReducerTimeline";
+import ReduxTimeline from "@/components/tools/ReduxTimeline";
 import { store } from "@/store/store";
+import { RootState } from "@/store/store";
+import { PayloadAction } from "@reduxjs/toolkit";
+import { ActiveBlocks, TimelineEntry } from "./types";
 
-export const ReduxVisualization = () => {
-  const [activeBlocks, setActiveBlocks] = useState({
+const ReduxVisualization = () => {
+  const [activeBlocks, setActiveBlocks] = useState<ActiveBlocks>({
     action: false,
     reducer: false,
     store: false,
   });
 
-  const [timeline, setTimeline] = useState([]);
-  const [currentTimelineIndex, setCurrentTimelineIndex] = useState(-1);
-  const [currentAction, setCurrentAction] = useState(null);
-  const [amount, setAmount] = useState(5);
+  const [timeline, setTimeline] = useState<TimelineEntry[]>([]);
+  const [currentTimelineIndex, setCurrentTimelineIndex] = useState<number>(-1);
+  const [currentAction, setCurrentAction] = useState<PayloadAction | null>(
+    null
+  );
+  const [amount, setAmount] = useState<number>(5);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  const count = useSelector((state) => state.counter.value);
-  const storeState = useSelector((state) => state);
+  const count = useSelector((state: RootState) => state.counter.value);
+  const storeState = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
 
-  const addToTimeline = (action, state) => {
-    const newEntry = { action, state: JSON.parse(JSON.stringify(state)) };
-    setTimeline((prev) => [...prev, newEntry]);
-    setCurrentTimelineIndex(timeline.length);
-  };
+  const addToTimeline = useCallback(
+    (action: PayloadAction, state: RootState) => {
+      const newEntry: TimelineEntry = {
+        action,
+        state: JSON.parse(JSON.stringify(state)),
+      };
 
-  const dispatchWithAnimation = (action) => {
+      setTimeline((prev) => [...prev, newEntry]);
+      setCurrentTimelineIndex((prev) => prev + 1);
+    },
+    []
+  );
+
+  const dispatchWithAnimation = (action: PayloadAction) => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
     setCurrentAction(action);
     setActiveBlocks({ action: true, reducer: false, store: false });
 
@@ -44,6 +60,7 @@ export const ReduxVisualization = () => {
 
         setTimeout(() => {
           setActiveBlocks({ action: false, reducer: false, store: false });
+          setIsAnimating(false);
         }, 1500);
       }, 1500);
     }, 1500);
@@ -54,9 +71,9 @@ export const ReduxVisualization = () => {
       addToTimeline(currentAction, storeState);
       setCurrentAction(null);
     }
-  }, [count]);
+  }, [count, currentAction, storeState, addToTimeline]);
 
-  const timeTravel = (index) => {
+  const timeTravel = (index: number) => {
     setCurrentTimelineIndex(index);
   };
 
@@ -138,30 +155,131 @@ export const ReduxVisualization = () => {
             <div className="flex flex-wrap justify-center gap-2">
               <button
                 onClick={() => dispatchWithAnimation(decrement())}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md"
+                disabled={isAnimating}
+                className={`px-4 py-2 rounded-lg transition-colors shadow-md flex items-center justify-center min-w-[100px] ${
+                  isAnimating
+                    ? "bg-slate-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                }`}
               >
-                Decrement
+                {isAnimating ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    <span className="text-white opacity-75">Processing</span>
+                  </>
+                ) : (
+                  "Decrement"
+                )}
               </button>
+
               <button
                 onClick={() => dispatchWithAnimation(increment())}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md"
+                disabled={isAnimating}
+                className={`px-4 py-2 rounded-lg transition-colors shadow-md flex items-center justify-center min-w-[100px] ${
+                  isAnimating
+                    ? "bg-slate-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                }`}
               >
-                Increment
+                {isAnimating ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    <span className="text-white opacity-75">Processing</span>
+                  </>
+                ) : (
+                  "Increment"
+                )}
               </button>
+
               <div className="flex items-center mt-2 sm:mt-0">
                 <input
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(Number(e.target.value))}
-                  className="w-16 px-2 py-2 border border-slate-300 dark:border-slate-600 rounded-lg mr-2 dark:bg-slate-700 text-slate-800 dark:text-white"
+                  disabled={isAnimating}
+                  className={`w-16 px-2 py-2 border rounded-lg mr-2 
+      ${
+        isAnimating
+          ? "bg-slate-200 border-slate-300 text-slate-500 dark:bg-slate-600 dark:border-slate-500 dark:text-slate-400 cursor-not-allowed"
+          : "border-slate-300 dark:border-slate-600 dark:bg-slate-700 text-slate-800 dark:text-white"
+      }`}
                 />
                 <button
                   onClick={() =>
                     dispatchWithAnimation(incrementByAmount(amount))
                   }
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md"
+                  disabled={isAnimating}
+                  className={`px-4 py-2 rounded-lg transition-colors shadow-md flex items-center justify-center min-w-[125px] ${
+                    isAnimating
+                      ? "bg-slate-400 cursor-not-allowed"
+                      : "bg-blue-600 hover:bg-blue-700 text-white"
+                  }`}
                 >
-                  Add Amount
+                  {isAnimating ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      <span className="text-white opacity-75">Processing</span>
+                    </>
+                  ) : (
+                    "Add Amount"
+                  )}
                 </button>
               </div>
             </div>
@@ -187,7 +305,7 @@ export const ReduxVisualization = () => {
                 </div>
               ) : (
                 timeline.map((entry, index) => (
-                  <TimelineEntry
+                  <ReduxTimeline
                     key={index}
                     action={entry.action}
                     state={entry.state}
@@ -220,7 +338,7 @@ export const ReduxVisualization = () => {
               Action:
             </span>{" "}
             An action is dispatched to signal a state change (e.g., clicking
-            "Increment")
+            &quot;Increment&quot;)
           </li>
           <li>
             <span className="font-medium text-blue-600 dark:text-blue-400">

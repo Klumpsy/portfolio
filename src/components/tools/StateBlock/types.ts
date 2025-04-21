@@ -1,4 +1,6 @@
+import { RootState } from "@/store/store";
+
 export interface StateBlockProps {
-    state: number;
+    state: RootState;
     isActive: boolean;
 }

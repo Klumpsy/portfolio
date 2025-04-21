@@ -1,6 +1,10 @@
 import React from "react";
+import { ActionBlockProps } from "./types";
 
-export const ActionBlock = ({ isActive, currentAction }) => {
+const ActionBlock: React.FunctionComponent<ActionBlockProps> = ({
+  isActive,
+  currentAction,
+}) => {
   return (
     <div
       className={`rounded-lg p-4 border-2 transition-all duration-300 shadow-md ${
@@ -20,3 +24,5 @@ export const ActionBlock = ({ isActive, currentAction }) => {
     </div>
   );
 };
+
+export default ActionBlock;
