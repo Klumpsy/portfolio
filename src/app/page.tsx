@@ -35,9 +35,18 @@ export default async function Home() {
               </h1>
 
               <p className="text-xl text-slate-600 dark:text-slate-300">
-                I’m passionate about clean code and modern web design using
-                JavaScript and TypeScript — and I never stop learning or
-                improving.
+                I Love writing code and designing modern, user-focused web
+                experiences with JavaScript and TypeScript. It’s exciting to
+                explore new tools, play with design patterns, and create apps
+                and websites that stand out. Building solutions that are both
+                practical and captivating is truly rewarding.
+              </p>
+              <p className="text-xl text-slate-600 dark:text-slate-300">
+                Working in teams is a lot of fun and very educational,
+                especially when it comes to tossing around ideas and creating
+                something awesome together, but solo projects feel just as
+                comfortable. Right now, the focus is on sharpening skills in
+                Laravel and Vue.js while also leveling up in React/Next.
               </p>
 
               <div className="flex flex-wrap gap-4 pt-6">
