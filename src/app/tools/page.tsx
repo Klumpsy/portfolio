@@ -51,13 +51,28 @@ export default async function ToolsPage() {
             <div className="flex-shrink-0 w-1 h-6 bg-blue-500 dark:bg-blue-400 rounded"></div>
             <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300">
+                Thunks
+              </span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            Coming soon...
+          </div>
+        </div>
+
+        <div className="mb-16">
+          <div className="flex items-center gap-2 mb-8">
+            <div className="flex-shrink-0 w-1 h-6 bg-blue-500 dark:bg-blue-400 rounded"></div>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-400 dark:to-blue-300">
                 Sagas
               </span>
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            Tool here
+            Coming soon...
           </div>
         </div>
       </div>

@@ -51,9 +51,11 @@ export default async function AboutPage() {
           </h1>
 
           <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-            From education to technology, my path has been driven by a passion
-            for learning new technologies and creating meaningful experiences.
-            Also, I love to code and build new projects.
+            Moving from teaching to tech has been a fun ride, fueled by a love
+            for picking up new tools and diving into fresh ideas. Coding is a
+            total blast, and there’s nothing like building new projects, be it a
+            cool app or a smooth website. Creating things that connect with
+            users and feel useful is what makes it all click.
           </p>
         </div>
 
