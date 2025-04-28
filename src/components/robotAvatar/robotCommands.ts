@@ -1,6 +1,4 @@
-// robotCommands/robotCommands.ts
 
-// Types for robot actions and behaviors
 export interface RobotAction {
     id: string;
     name: string;
@@ -142,7 +140,6 @@ export interface RobotAction {
     }
   ];
   
-  // Interactions with page elements
   export const ROBOT_INTERACTIONS: RobotInteraction[] = [
     {
       selector: '#robo-profile-image',
@@ -180,13 +177,11 @@ export interface RobotAction {
     "Greetings, visitor! Let me tell you about Bart's projects!"
   ];
   
-  // Get a random welcome message
   export const getRandomWelcomeMessage = (): string => {
     const randomIndex = Math.floor(Math.random() * WELCOME_MESSAGES.length);
     return WELCOME_MESSAGES[randomIndex];
   };
   
-  // Time-based greetings
   export const getTimeBasedGreeting = (): string => {
     const hour = new Date().getHours();
     

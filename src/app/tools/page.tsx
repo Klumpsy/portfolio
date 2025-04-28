@@ -1,5 +1,3 @@
-"use server";
-
 import ReduxVisualizationWithProvider from "@/components/tools/ReduxVisualisation/ReduxVisualisation";
 import React from "react";
 

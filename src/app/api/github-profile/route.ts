@@ -50,7 +50,6 @@ async function getContributionCount(username: string, token?: string): Promise<n
     }
   `;
 
-  console.log('Sending GraphQL request to GitHub API');
   const response = await fetch('https://api.github.com/graphql', {
     method: 'POST',
     headers: {
@@ -63,8 +62,6 @@ async function getContributionCount(username: string, token?: string): Promise<n
     }),
   });
 
-  console.log(`GraphQL response status: ${response.status}`);
-  
   if (!response.ok) {
     const errorText = await response.text();
     console.error(`GitHub GraphQL API error: ${response.status}`);
@@ -77,37 +74,29 @@ async function getContributionCount(username: string, token?: string): Promise<n
   
   try {
     const data = JSON.parse(responseText);
-    console.log('GraphQL response parsed successfully');
-    
+
     if (!data.data) {
       console.error('GraphQL response missing data property');
-      console.log('Response:', responseText);
       throw new Error('GraphQL response missing data property');
     }
     
     if (!data.data.user) {
       console.error('GraphQL response missing user property');
-      console.log('Response data:', JSON.stringify(data));
       throw new Error('GraphQL response missing user property');
     }
     
     if (!data.data.user.contributionsCollection) {
       console.error('GraphQL response missing contributionsCollection property');
-      console.log('User data:', JSON.stringify(data.data.user));
       throw new Error('GraphQL response missing contributionsCollection property');
     }
     
     if (!data.data.user.contributionsCollection.contributionCalendar) {
       console.error('GraphQL response missing contributionCalendar property');
-      console.log('Contributions data:', JSON.stringify(data.data.user.contributionsCollection));
       throw new Error('GraphQL response missing contributionCalendar property');
     }
     
     const contributionCalendar = data.data.user.contributionsCollection.contributionCalendar;
-    console.log('Contribution calendar data retrieved successfully');
-    
     const totalContributions = contributionCalendar.totalContributions;
-    console.log(`Total contributions from calendar: ${totalContributions}`);
     
     let calculatedTotal = 0;
     contributionCalendar.weeks.forEach((week: { contributionDays: { contributionCount: number }[] }) => {
@@ -127,18 +116,9 @@ async function getContributionCount(username: string, token?: string): Promise<n
 
 export async function GET() {
   try {
-    console.log('GitHub profile API route called');
-    console.log('Environment variables:');
-    console.log(`GITHUB_USERNAME: ${process.env.GITHUB_USERNAME || 'not set'}`);
-    console.log(`GITHUB_TOKEN: ${process.env.GITHUB_TOKEN ? 'set' : 'not set'}`);
-    console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
-    
     const username = process.env.GITHUB_USERNAME || 'Klumpsy';
     const token = process.env.GITHUB_TOKEN;
-    
-    console.log(`Username: ${username}`);
-    console.log(`Token available: ${token ? 'Yes' : 'No'}`);
-    
+  
     const headers: HeadersInit = {
       'Accept': 'application/vnd.github.v3+json',
       'User-Agent': 'Portfolio-App'
@@ -146,18 +126,14 @@ export async function GET() {
     
     if (token) {
       headers['Authorization'] = `token ${token}`;
-      console.log('Authorization header set with token');
     } else {
       console.log('No token available, using unauthenticated request');
     }
 
-    console.log('Fetching user profile from GitHub REST API');
     const profileResponse = await fetch(`https://api.github.com/users/${username}`, {
       headers,
       next: { revalidate: 3600 } // Cache for 1 hour
     });
-    
-    console.log(`Profile response status: ${profileResponse.status}`);
     
     if (!profileResponse.ok) {
       const errorText = await profileResponse.text();
@@ -166,15 +142,10 @@ export async function GET() {
     }
     
     const profileData = await profileResponse.json();
-    console.log('User profile fetched successfully');
-    
-    console.log('Fetching repositories from GitHub REST API');
     const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`, {
       headers,
       next: { revalidate: 3600 } // Cache for 1 hour
     });
-    
-    console.log(`Repos response status: ${reposResponse.status}`);
     
     if (!reposResponse.ok) {
       const errorText = await reposResponse.text();
@@ -183,11 +154,8 @@ export async function GET() {
     }
     
     const repos: GitHubRepo[] = await reposResponse.json();
-    console.log(`Fetched ${repos.length} repositories`);
-
     const totalStars = repos.reduce((acc, repo) => acc + repo.stargazers_count, 0);
-    console.log(`Total stars: ${totalStars}`);
-   
+
     const languageStats = repos.reduce((acc, repo) => {
       if (repo.language && !repo.fork) {
         acc[repo.language] = (acc[repo.language] || 0) + 1;
@@ -204,16 +172,11 @@ export async function GET() {
       .sort((a, b) => b.percentage - a.percentage)
       .slice(0, 5);
     
-    console.log('Top languages calculated');
-
-    console.log('Fetching contribution count');
     let contributions = 0;
     try {
       contributions = await getContributionCount(username, token);
-      console.log(`Contribution count: ${contributions}`);
     } catch (error) {
       console.error('Error fetching contribution count:', error);
-      console.log('Continuing without contribution data');
     }
 
     const profile: GitHubProfile = {
@@ -233,9 +196,6 @@ export async function GET() {
       topLanguages,
     };
     
-    console.log('GitHub profile constructed successfully');
-    
-    // Return response with caching headers
     return NextResponse.json(
       { profile },
       {

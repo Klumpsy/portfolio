@@ -15,7 +15,7 @@ export interface Skill {
   description: string;
 }
 
-// Dynamically import the 3D visualization component with no SSR
+// Dynamically -> no SSR
 // This ensures Three.js only loads on the client side
 const TechStackVisualization = dynamic(
   () => import("@/components/skills/TechStackVisualization"),
@@ -138,7 +138,6 @@ export default function SkillsPage() {
           </div>
         </div>
 
-        {/* Call to action */}
         <div className="mt-16 text-center">
           <Link
             href="/projects"

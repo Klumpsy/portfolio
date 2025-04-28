@@ -126,7 +126,6 @@ export default async function Home() {
 
             <div className="md:w-1/2 flex justify-center mt-12 md:mt-0">
               <div className="relative w-72 h-72 sm:w-80 sm:h-80">
-                {/* Profile image with modern styling */}
                 <div className="absolute inset-0 bg-[#f1f5f9] dark:bg-slate-800 rounded-2xl rotate-6 z-0"></div>
 
                 <div className="absolute inset-2 overflow-hidden rounded-2xl z-10 border-2 border-white dark:border-slate-700 shadow-xl">

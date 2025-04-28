@@ -24,12 +24,10 @@ export default function ProjectCard({
   language,
   homepage,
 }: ProjectCardProps) {
-  // Create a clickable card that links to the project homepage or GitHub
   const projectLink = homepage || html_url;
 
   return (
     <div className="group bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:translate-y-[-6px] flex flex-col h-full relative">
-      {/* Make entire card clickable with invisible overlay */}
       <Link
         href={projectLink}
         target="_blank"
@@ -40,14 +38,9 @@ export default function ProjectCard({
         <span className="sr-only">View project</span>
       </Link>
 
-      {/* Icon header */}
       <div className="bg-slate-50 dark:bg-slate-900 p-6 flex items-center justify-center h-40 border-b border-slate-200 dark:border-slate-700 relative">
-        {/* Top accent */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 to-blue-400 dark:from-blue-500 dark:to-blue-300"></div>
-
-        {/* Subtle background pattern */}
         <div className="absolute inset-0 bg-[url('/grid-light.svg')] dark:bg-[url('/grid-dark.svg')] bg-center opacity-30 dark:opacity-20"></div>
-
         <div className="relative transform group-hover:scale-110 transition-transform duration-300">
           <Image
             src={`/icons/${name.toLowerCase().replace(/\s+/g, "-")}.svg`}
@@ -57,13 +50,12 @@ export default function ProjectCard({
             className="drop-shadow-md"
             onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
               const target = e.target as HTMLImageElement;
-              target.src = "/icons/space.svg";
+              target.src = "/icons/projectLogo.svg";
             }}
           />
         </div>
       </div>
 
-      {/* Content */}
       <div className="p-5 flex-grow flex flex-col">
         <h3 className="text-lg font-bold mb-2 text-slate-800 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
           {name}
@@ -73,7 +65,6 @@ export default function ProjectCard({
           {description || "No description available"}
         </p>
 
-        {/* Tags */}
         <div className="flex flex-wrap gap-1.5 mb-4">
           {topics.slice(0, 4).map((topic) => (
             <span
@@ -90,7 +81,6 @@ export default function ProjectCard({
           )}
         </div>
 
-        {/* Footer */}
         <div className="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-slate-700">
           <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
             {language && (

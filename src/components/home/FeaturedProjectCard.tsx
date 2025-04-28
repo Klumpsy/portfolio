@@ -61,7 +61,7 @@ export default function FeaturedProjectCard({
               className="drop-shadow-md"
               onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
                 const target = e.target as HTMLImageElement;
-                target.src = "/icons/space.svg";
+                target.src = "/icons/projectLogo.svg";
               }}
             />
           </div>

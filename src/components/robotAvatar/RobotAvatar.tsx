@@ -13,6 +13,7 @@ import {
 } from "./robotCommands";
 import { RobotInteraction } from "./robotCommands";
 
+//@todo Bart -> Logica in Container en robo in view
 export default function RobotAvatar() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -228,7 +229,7 @@ export default function RobotAvatar() {
       mustacheMaterial
     );
     leftMustachePart.position.set(-0.3, -0.2, 0.95);
-    leftMustachePart.rotation.z = Math.PI / 12; // Slight angle
+    leftMustachePart.rotation.z = Math.PI / 12;
     mustacheGroup.add(leftMustachePart);
 
     const rightMustacheGeometry = new THREE.BoxGeometry(0.5, 0.12, 0.05);
@@ -237,7 +238,7 @@ export default function RobotAvatar() {
       mustacheMaterial
     );
     rightMustachePart.position.set(0.3, -0.2, 0.95);
-    rightMustachePart.rotation.z = -Math.PI / 12; // Slight angle in opposite direction
+    rightMustachePart.rotation.z = -Math.PI / 12;
     mustacheGroup.add(rightMustachePart);
 
     const centerMustacheGeometry = new THREE.BoxGeometry(0.2, 0.08, 0.05);
@@ -523,9 +524,7 @@ export default function RobotAvatar() {
     return (
       <div
         className={`${
-          isMobile
-            ? "fixed bottom-4 left-4 z-50" // Mobile: bottom left corner
-            : "fixed top-28 left-4 z-50" // Desktop/tablet: fixed at top left
+          isMobile ? "fixed bottom-4 left-4 z-50" : "fixed top-28 left-4 z-50"
         }`}
       >
         <button

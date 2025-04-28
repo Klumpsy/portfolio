@@ -39,7 +39,6 @@ export async function GET() {
 
     const repos = await response.json() as GitHubRepo[];
     
-    // Filter repos that have the portfolio topic
     const portfolioProjects = repos
       .filter((repo) => repo.topics?.includes('portfolio'))
       .map((repo): PortfolioProject => ({
